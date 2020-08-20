@@ -3,7 +3,7 @@
 # Parameter values
 
 # Calibrated parameters
-AD=20 # Average duration of government debt
+AD=20.0 # Average duration of government debt
 β=0.99 # Discount factor
 α=0.33 # Capital income share
 δ=0.025 # Capital depreciation
@@ -11,7 +11,7 @@ AD=20 # Average duration of government debt
 η_w=0.14 # Wage markup
 gy=0.11 # Steady state share of government consumption in gdp (g/y)
 by=1.47 # Steady state government debt to gdp
-π_ss=1 # Steady state inflation
+π_ss=1.0 # Steady state inflation
 τK=0.218 # Steady state capital taxation
 τL=0.186 # Steady state labor taxation
 τC=0.023 # Steady state consumption taxation
@@ -41,11 +41,11 @@ function estimatedpara()
     ξ=2.0 # Inverse Frisch labor elasticity
     θ=0.5 # Habit formation
     μ=0.3 # Fraction of non-savers
-    α_G=0.0 # Substitutability of private/public consumption
+    α_G=0.1 # Substitutability of private/public consumption
 
     # Frictions and production
     ψ=0.6 # Capital utilization
-    s=6 # Investment adjustment cost
+    s=6.0 # Investment adjustment cost
     ω_p=0.5 # Price stickiness
     ω_w=0.5 # Wage stickiness
     χ_p=0.5 # Price partial indexation
@@ -323,11 +323,26 @@ function linearizedmodel(calibpara,estimpara,regime)
     ueg_var=30 # Government consumption shock
     uez_var=31 # Transfers shock
 
-    # Lagged variables
-    πL_var=32 # Lagged inflation
-    wL_var=33 # Lagged wages
-    iL_var=34 # Lagged investment
-    uaL_var=35 # Lagged technology shock
+    # Expectation variables
+    Ei_var=32
+    EλS_var=33
+    Eq_var=34
+    Eπ_var=35
+    Ew_var=36
+    Erk_var=37
+    EPB_var=38
+    Eua_var=39
+    EτK_var=40
+
+    # Observable variables
+    dcobs_var=41 # Log differences of aggregate consumption
+    diobs_var=42 # Log differences of aggregate investment
+    dwobs_var=43 # Log differences of real wages
+    dgobs_var=44 # Log differences of government consumption
+    dbobs_var=45 # Log differences of real debt in market value
+    Lobs_var=46 # Log hours worked
+    πobs_var=47 # GDP deflator
+    Robs_var=48 # Fed funds rate
 
     # Expectation errors
     i_experr=1
@@ -382,17 +397,30 @@ function linearizedmodel(calibpara,estimpara,regime)
     armonetarypolicy_eq=29
     argovernmentconsumption_eq=30
     artransfers_eq=31
-    laggedinflation_eq=32
-    laggedwage_eq=33
-    laggedinvestment_eq=34
-    laggedtechnologyshock_eq=35
+    expectedinvestment_eq=32
+    expectedλS_eq=33
+    expectedq_eq=34
+    expectedinflation_eq=35
+    expectedwage_eq=36
+    expectedcapitalreturn_eq=37
+    expecteddebtprice_eq=38
+    expectedtechnologyshock_eq=39
+    expectedcapitaltaxes_eq=40
+    consumptionobservable_eq=41
+    investmentobservable_eq=42
+    wageobservable_eq=43
+    governmentobservable_eq=44
+    debtobservable_eq=45
+    hoursobservable_eq=46
+    deflatorobservable_eq=47
+    fedfundsobservable_eq=48
 
     # Writing the equations
 
     # Γ_0 y_t=Γ_1 y_{t-1} + constant + Ψ z_t + Π η_t
 
-    num_var=35
-    num_eq=35 # Needs to be the same as num_var!
+    num_var=48
+    num_eq=48 # Needs to be the same as num_var!
     num_shocks=8
     num_experr=9
 
@@ -421,14 +449,12 @@ function linearizedmodel(calibpara,estimpara,regime)
     # 4. Phillips curve
     κ_p=((1-β*ω_p)*(1-ω_p))/(ω_p*(1+β*χ_p))
 
-    Γ_0[phillipscurve_eq,π_var]=-β/(1+χ_p*β)
+    Γ_0[phillipscurve_eq,π_var]=1
+    Γ_0[phillipscurve_eq,Eπ_var]=-β/(1+χ_p*β)
+    Γ_0[phillipscurve_eq,mc_var]=-κ_p
+    Γ_1[phillipscurve_eq,up_var]=-1
 
-    Γ_1[phillipscurve_eq,π_var]=-1
-    Γ_1[phillipscurve_eq,πL_var]=χ_p/(1+χ_p*β)
-    Γ_1[phillipscurve_eq,mc_var]=κ_p
-    Γ_1[phillipscurve_eq,up_var]=1
-
-    Π[phillipscurve_eq,π_experr]=-β/(1+χ_p*β)
+    Γ_1[phillipscurve_eq,π_var]=χ_p/(1+χ_p*β)
 
     # 5. Household FOC for consumption
     Γ_0[hhfocconsumption_eq,λS_var]=1
@@ -442,24 +468,16 @@ function linearizedmodel(calibpara,estimpara,regime)
     Γ_1[hhfocconsumption_eq,g_var]=θ/(exp(γ)-θ)*(α_G*g/(cS+α_G*g))
 
     # 6. Euler equation
-    Γ_0[euler_eq,λS_var]=-1
-    Γ_0[euler_eq,π_var]=1
-    Γ_0[euler_eq,ua_var]=1
-
-    Γ_1[euler_eq,λS_var]=-1
-    Γ_1[euler_eq,R_var]=1
-
-    Π[euler_eq,λS_experr]=-1
-    Π[euler_eq,π_experr]=1
-    Π[euler_eq,ua_experr]=1
+    Γ_0[euler_eq,EλS_var]=-1
+    Γ_0[euler_eq,Eπ_var]=1
+    Γ_0[euler_eq,Eua_var]=1
+    Γ_0[euler_eq,λS_var]=1
+    Γ_0[euler_eq,R_var]=-1
 
     # 7. Maturity Structure of Debt
-    Γ_0[maturitystructuredebt_eq,PB_var]=-ρ/R
-
-    Γ_1[maturitystructuredebt_eq,PB_var]=-1
-    Γ_1[maturitystructuredebt_eq,R_var]=-1
-
-    Π[maturitystructuredebt_eq,PB_experr]=-ρ/R
+    Γ_0[maturitystructuredebt_eq,EPB_var]=-ρ/R
+    Γ_0[maturitystructuredebt_eq,PB_var]=1
+    Γ_0[maturitystructuredebt_eq,R_var]=1
 
     # 8. Household FOC for capacity utilization
     Γ_0[hhfoccapacityutilization_eq,rk_var]=1
@@ -467,32 +485,23 @@ function linearizedmodel(calibpara,estimpara,regime)
     Γ_0[hhfoccapacityutilization_eq,v_var]=-ψ/(1-ψ)
 
     # 9. Household FOC for capital
-    Γ_0[hhfoccapital_eq,q_var]=-β*exp(-γ)*(1-δ)
-    Γ_0[hhfoccapital_eq,rk_var]=-β*exp(-γ)*(1-τK)*rk
-    Γ_0[hhfoccapital_eq,τK_var]=β*exp(-γ)*τK*rk
-    Γ_0[hhfoccapital_eq,λS_var]=-1
-    Γ_0[hhfoccapital_eq,ua_var]=1
-
-    Γ_1[hhfoccapital_eq,q_var]=-1
-    Γ_1[hhfoccapital_eq,λS_var]=-1
-
-    Π[hhfoccapital_eq,q_experr]=-β*exp(-γ)*(1-δ)
-    Π[hhfoccapital_eq,rk_experr]=-β*exp(-γ)*(1-τK)*rk
-    Π[hhfoccapital_eq,τK_experr]=β*exp(-γ)*τK*rk
-    Π[hhfoccapital_eq,λS_experr]=-1
-    Π[hhfoccapital_eq,ua_experr]=1
+    Γ_0[hhfoccapital_eq,Eq_var]=-β*exp(-γ)*(1-δ)
+    Γ_0[hhfoccapital_eq,Erk_var]=-β*exp(-γ)*(1-τK)*rk
+    Γ_0[hhfoccapital_eq,EτK_var]=β*exp(-γ)*τK*rk
+    Γ_0[hhfoccapital_eq,EλS_var]=-1
+    Γ_0[hhfoccapital_eq,Eua_var]=1
+    Γ_0[hhfoccapital_eq,q_var]=1
+    Γ_0[hhfoccapital_eq,λS_var]=1
 
     # 10. Household FOC for investment
-    Γ_0[hhfocinvestment_eq,i_var]=-β/(1+β)
-    Γ_0[hhfocinvestment_eq,ua_var]=-β/(1+β)
+    Γ_0[hhfocinvestment_eq,Ei_var]=-β/(1+β)
+    Γ_0[hhfocinvestment_eq,Eua_var]=-β/(1+β)
+    Γ_0[hhfocinvestment_eq,i_var]=1
+    Γ_0[hhfocinvestment_eq,ua_var]=1/(1+β)
+    Γ_0[hhfocinvestment_eq,ui_var]=-1
+    Γ_0[hhfocinvestment_eq,q_var]=-1/((1+β)*s*exp(2*γ))
 
-    Γ_1[hhfocinvestment_eq,i_var]=-1
-    Γ_1[hhfocinvestment_eq,ua_var]=-1/(1+β)
-    Γ_1[hhfocinvestment_eq,ui_var]=1
-    Γ_1[hhfocinvestment_eq,iL_var]=1/(1+β)
-
-    Π[hhfocinvestment_eq,i_experr]=-β/(1+β)
-    Π[hhfocinvestment_eq,ua_experr]=-β/(1+β)
+    Γ_1[hhfocinvestment_eq,i_var]=1/(1+β)
 
     # 11. Effective capital
     Γ_0[effectivecapital_eq,k_var]=1
@@ -518,25 +527,22 @@ function linearizedmodel(calibpara,estimpara,regime)
     Γ_0[nonsaversbudgetconstraint_eq,z_var]=-z
 
     # 14. Wage equation
-    κ_w=((1-β*ω_w)*(1-ω_w))/(ω_w*(1+β)*(1+((1+η_w)*ξ)/η_w))
+    κ_w=((1-β*ω_w)*(1-ω_w))/(ω_w*(1+β)*(1+(((1+η_w)*ξ)/η_w)))
 
-    Γ_0[wage_eq,w_var]=-β/(1+β)
-    Γ_0[wage_eq,π_var]=-β/(1+β)
+    Γ_0[wage_eq,Ew_var]=-β/(1+β)
+    Γ_0[wage_eq,Eπ_var]=-β/(1+β)
+    Γ_0[wage_eq,w_var]=(1+κ_w)
+    Γ_0[wage_eq,L_var]=-κ_w*ξ
+    Γ_0[wage_eq,ub_var]=-κ_w
+    Γ_0[wage_eq,λS_var]=κ_w
+    Γ_0[wage_eq,τL_var]=-κ_w*(τL/(1-τL))
+    Γ_0[wage_eq,π_var]=(1+β*χ_w)/(1+β)
+    Γ_0[wage_eq,ua_var]=(1+β*χ_w-ρ_a*β)/(1+β)
+    Γ_0[wage_eq,uw_var]=-1
 
-    Γ_1[wage_eq,w_var]=-1-κ_w
-    Γ_1[wage_eq,L_var]=κ_w*ξ
-    Γ_1[wage_eq,ub_var]=κ_w
-    Γ_1[wage_eq,λS_var]=-κ_w
-    Γ_1[wage_eq,τL_var]=κ_w*(τL/(1-τL))
-    Γ_1[wage_eq,π_var]=-(1+β*χ_w)/(1+β)
-    Γ_1[wage_eq,ua_var]=-(1+β*χ_w-ρ_a*β)/(1+β)
-    Γ_1[wage_eq,uw_var]=1
-    Γ_1[wage_eq,wL_var]=1/(1+β)
-    Γ_1[wage_eq,πL_var]=χ_w/(1+β)
-    Γ_1[wage_eq,uaL_var]=χ_w/(1+β)
-
-    Π[wage_eq,w_experr]=-β/(1+β)
-    Π[wage_eq,π_experr]=-β/(1+β)
+    Γ_1[wage_eq,w_var]=1/(1+β)
+    Γ_1[wage_eq,π_var]=χ_w/(1+β)
+    Γ_1[wage_eq,ua_var]=χ_w/(1+β)
 
     # 15. Aggregation of household consumption
     Γ_0[agghhconsumption_eq,c_var]=c
@@ -690,25 +696,115 @@ function linearizedmodel(calibpara,estimpara,regime)
 
     Ψ[artransfers_eq,epsez_innov]=σ_ez
 
-    # 32. Lagged inflation equation
-    Γ_0[laggedinflation_eq,πL_var]=1
+    # 32. Definition investment expectations
+    Γ_0[expectedinvestment_eq,i_var]=1
 
-    Γ_1[laggedinflation_eq,π_var]=1
+    Γ_1[expectedinvestment_eq,Ei_var]=1
 
-    # 33. Lagged wage equation
-    Γ_0[laggedwage_eq,wL_var]=1
+    Π[expectedinvestment_eq,i_experr]=1
 
-    Γ_1[laggedwage_eq,w_var]=1
+    # 33. Definition λS expectations
+    Γ_0[expectedλS_eq,λS_var]=1
 
-    # 34. Lagged investment equation
-    Γ_0[laggedinvestment_eq,iL_var]=1
+    Γ_1[expectedλS_eq,EλS_var]=1
 
-    Γ_1[laggedinvestment_eq,i_var]=1
+    Π[expectedinvestment_eq,λS_experr]=1
 
-    # 35. Lagged technology shock equation
-    Γ_0[laggedtechnologyshock_eq,uaL_var]=1
+    # 34. Definition tobin q's expectations
+    Γ_0[expectedq_eq,q_var]=1
 
-    Γ_1[laggedtechnologyshock_eq,ua_var]=1
+    Γ_1[expectedq_eq,Eq_var]=1
+
+    Π[expectedq_eq,q_experr]=1
+
+    # 35. Definition inflation expectations
+    Γ_0[expectedinflation_eq,π_var]=1
+
+    Γ_1[expectedinflation_eq,Eπ_var]=1
+
+    Π[expectedinflation_eq,π_experr]=1
+
+    # 36. Definition wage expectations
+    Γ_0[expectedwage_eq,w_var]=1
+
+    Γ_1[expectedwage_eq,Ew_var]=1
+
+    Π[expectedwage_eq,w_experr]=1
+
+    # 37. Definition capital return expectations
+    Γ_0[expectedcapitalreturn_eq,rk_var]=1
+
+    Γ_1[expectedcapitalreturn_eq,Erk_var]=1
+
+    Π[expectedcapitalreturn_eq,rk_experr]=1
+
+    # 38. Definition debt price expectations
+    Γ_0[expecteddebtprice_eq,PB_var]=1
+
+    Γ_1[expecteddebtprice_eq,EPB_var]=1
+
+    Π[expecteddebtprice_eq,PB_experr]=1
+
+    # 39. Definition technology shock expectations
+    Γ_0[expectedtechnologyshock_eq,ua_var]=1
+
+    Γ_1[expectedtechnologyshock_eq,Eua_var]=1
+
+    Π[expectedtechnologyshock_eq,ua_experr]=1
+
+    # 40. Definition capital taxes expectations
+    Γ_0[expectedcapitaltaxes_eq,τK_var]=1
+
+    Γ_1[expectedcapitaltaxes_eq,EτK_var]=1
+
+    Π[expectedcapitaltaxes_eq,τK_experr]=1
+
+    # 41. Definition consumption observable
+    Γ_0[consumptionobservable_eq,dcobs_var]=1
+    Γ_0[consumptionobservable_eq,c_var]=-100
+    Γ_0[consumptionobservable_eq,ua_var]=-100
+
+    Γ_1[consumptionobservable_eq,c_var]=-100
+
+    # 42. Definition investment observable
+    Γ_0[investmentobservable_eq,diobs_var]=1
+    Γ_0[investmentobservable_eq,i_var]=-100
+    Γ_0[investmentobservable_eq,ua_var]=-100
+
+    Γ_1[investmentobservable_eq,i_var]=-100
+
+    # 43. Definition wage observable
+    Γ_0[wageobservable_eq,dwobs_var]=1
+    Γ_0[wageobservable_eq,w_var]=-100
+    Γ_0[wageobservable_eq,ua_var]=-100
+
+    Γ_1[wageobservable_eq,w_var]=-100
+
+    # 44. Definition government consumption observable
+    Γ_0[governmentobservable_eq,dgobs_var]=1
+    Γ_0[governmentobservable_eq,g_var]=-100
+    Γ_0[governmentobservable_eq,ua_var]=-100
+
+    Γ_1[governmentobservable_eq,g_var]=-100
+
+    # 45. Definition government debt observable
+    Γ_0[debtobservable_eq,dbobs_var]=1
+    Γ_0[debtobservable_eq,b_var]=-100
+    Γ_0[debtobservable_eq,ua_var]=-100
+
+    Γ_1[debtobservable_eq,b_var]=-100
+
+    # 46. Definition hours of work observable
+    Γ_0[hoursobservable_eq,Lobs_var]=1
+    Γ_0[consumptionobservable_eq,L_var]=-100
+
+    # 47. Definition deflator observable
+    Γ_0[deflatorobservable_eq,πobs_var]=1
+    Γ_0[deflatorobservable_eq,π_var]=-100
+
+    # 48. Definition fed funds observable
+    Γ_0[fedfundsobservable_eq,Robs_var]=1
+    Γ_0[fedfundsobservable_eq,R_var]=-100
 
 
     return Γ_0, Γ_1, constant, Ψ, Π
@@ -720,7 +816,6 @@ end
 function mygensys(Γ_0, Γ_1, constant, Ψ, Π)
     root=1
     F=schur!(complex(Γ_0), complex(Γ_1))
-
     eu = [0, 0]
     a, b = F.S, F.T
     n = size(a, 1)
@@ -740,66 +835,59 @@ function mygensys(Γ_0, Γ_1, constant, Ψ, Π)
     FS = ordschur!(F, movelast)
     a, b, qt, z = FS.S, FS.T, FS.Q, FS.Z
 
-    qt1 = qt[:, 1:(n - nunstab)]
-    qt2 = qt[:, (n - nunstab + 1):n]
+    qt1 = qt[1:(n - nunstab),:]
+    qt2 = qt[(n - nunstab + 1):n,:]
     a2 = a[(n - nunstab + 1):n, (n - nunstab + 1):n]
     b2 = b[(n - nunstab + 1):n, (n - nunstab + 1):n]
-    etawt=similar(Π)
+    etawt=zeros(nunstab,nunstab)
     mul!(etawt,qt2, Π)
     bigev, ueta, deta, veta = decomposition_svdct!(etawt)
-    zwt=similar(Ψ)
-    mul!(zwt,qt2, Ψ)
-    bigev, uz, dz, vz = decomposition_svdct!(zwt)
-    if isempty(bigev)
-        exist = true
-    else
-        exist = vecnorm(uz- A_mul_Bc(ueta, ueta) * uz, 2) < ϵ * n
-    end
-    if isempty(bigev)
-        existx = true
-    else
-        zwtx0 = b2 \ zwt
-        zwtx = zwtx0
-        M = b2 \ a2
-        M = scale!(M, 1 / norm(M))
-        for i in 2:nunstab
-            zwtx = hcat(M * zwtx, zwtx0)
-        end
-        zwtx = b2 * zwtx
-        bigev, ux, dx, vx = decomposition_svdct!(zwtx)
-        existx = vecnorm(ux - A_mul_Bc(ueta, ueta) * ux, 2) < ϵ * n
-    end
-    etawt1=similar(Π)
+    eu[1]=length(bigev)>=nunstab
+    #zwt=zeros(nunstab,nunstab)
+    #mul!(zwt,qt1, Π)
+    #bigev1, ueta1, deta1, veta1 = decomposition_svdct!(zwt)
+    #if isempty(veta1)
+    #    exist = true
+    #else
+    #    exist = norm(veta1- veta*veta'*veta1) < ϵ * n
+    #end
+    #if exist
+    #    eu[2]=1
+    #    existx = true
+    #else
+    #    println("Indeterminacy")
+    #end
+    etawt1=zeros(n-nunstab,nunstab)
     mul!(etawt1, qt1, Π)
     bigev, ueta1, deta1, veta1 = decomposition_svdct!(etawt1)
-    if existx | (nunstab == 0)
-       eu[1] = 1
-    else
-        if exist
-            eu[1] = -1
-        end
-    end
+    #if existx | (nunstab == 0)
+    #   eu[1] = 1
+    #else
+    #    if exist
+    #        eu[1] = -1
+    #    end
+    #end
     if isempty(veta1)
         unique = true
     else
-        unique = vecnorm(veta1- A_mul_Bc(veta, veta) * veta1, 2) < ϵ * n
+        unique = norm(veta1- (veta*veta')* veta1) < ϵ * n
     end
     if unique
        eu[2] = 1
     end
 
-    tmat = hcat(eye(n - nunstab), -ueta1 * deta1 * Ac_mul_B(veta1, veta) * (deta \ ueta'))
-    G0 =  vcat(tmat * a, hcat(zeros(nunstab, n - nunstab), eye(nunstab)))
+    tmat = hcat(I, -(ueta*(deta\veta')*veta1*deta1*ueta1')')
+    G0 =  vcat(tmat * a, hcat(zeros(nunstab, n - nunstab), I))
     G1 =  vcat(tmat * b, zeros(nunstab, n))
     G1 = G0 \ G1
     usix = (n - nunstab + 1):n
-    C = G0 \ vcat(tmat * Ac_mul_B(qt, c), (a[usix, usix] .- b[usix, usix]) \ Ac_mul_B(qt2, c))
-    impact = G0 \ vcat(tmat * Ac_mul_B(qt, Ψ), zeros(nunstab, size(Ψ, 2)))
-    G1 = z * A_mul_Bc(G1, z)
+    C = G0 \ vcat(tmat * (qt*constant), (a[usix, usix] .- b[usix, usix]) \ (qt2*constant))
+    impact = G0 \ vcat(tmat * (qt*Ψ), zeros(nunstab, size(Ψ, 2)))
+    G1 = z * (G1*z)
     G1 = real(G1)
     C = real(z * C)
     impact = real(z * impact)
-    return G1, C, impact, qt', a, b, z, eu
+    return G1, C, impact, qt, a, b, z, eu
 end
 
 
@@ -821,12 +909,63 @@ end
 
 
 function decomposition_svdct!(A)
-    Asvd = svdfact!(A)
-    bigev = find(Asvd.S .> ϵ)
+    Asvd = svd(A)
+    bigev = findall(Asvd.S .> ϵ)
     Au = Asvd.U[:, bigev]
     Ad = diagm(Asvd.S[bigev])
     Av = Asvd.V[:, bigev]
     return bigev, Au, Ad, Av
 end
 
-G1, C, impact, qt', a, b, z, eu=mygensys(Γ_0,Γ_1,constant,Ψ,Π)
+G1, C, impact, qt, a, b, z, eu=mygensys(Γ_0,Γ_1,constant,Ψ,Π)
+
+
+# Constructing the state space form with observables
+
+# Transition equation: α_t=T α_{t-1} + R η_t,    η_t is N(0,Q)
+# Measurement equation: y_t=Z α_t + C + ζ_t   ζ_t is N(0,H)
+
+num_statevariables=48
+num_obsvariables=8
+num_shocks=8
+
+# Observable variables indices
+dcobs_var=41 # Log differences of aggregate consumption
+diobs_var=42 # Log differences of aggregate investment
+dwobs_var=43 # Log differences of real wages
+dgobs_var=44 # Log differences of government consumption
+dbobs_var=45 # Log differences of real debt in market value
+Lobs_var=46 # Log hours worked
+πobs_var=47 # GDP deflator
+Robs_var=48 # Fed funds rate
+
+
+T=G1
+
+R=impact
+
+Q=Matrix(1I,num_shocks,num_shocks)
+
+Z=zeros(num_obsvariables,num_statevariables)
+Z[1,dcobs_var]=1
+Z[2,diobs_var]=1
+Z[3,dwobs_var]=1
+Z[4,dgobs_var]=1
+Z[5,dbobs_var]=1
+Z[6,Lobs_var]=1
+Z[7,πobs_var]=1
+Z[8,Robs_var]=1
+
+C=zeros(num_obsvariables)
+C[1]=γ*100
+C[2]=γ*100
+C[3]=γ*100
+C[4]=γ*100
+C[5]=γ*100
+#C[6]=Lbar
+#C[7]=π_ss
+#C[8]=π_ss+Rbar
+
+# Need to define what the steady state values in these last constants should equal to
+
+H=zeros(num_obsvariables,num_obsvariables)
