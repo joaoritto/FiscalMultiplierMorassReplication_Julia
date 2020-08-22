@@ -14,7 +14,8 @@
 # Input: T,R,Q,Z,H,W,data
 # Output: Smth_a, Smth_P
 
-
+curret_repository = "/Users/yoshiki/Dropbox/Morass/MyJuliaCode"
+# I will use the csv file from Homework 2 of 706 "gdpplus.csv"
 
 ## Define the Function to run Kalman Filter
 function myKalmanFilter(T,R,Q,Z,H,W,data)
@@ -118,7 +119,6 @@ end
 
 ## Check if it works properly
 # Download the csv.data used in Homework 2 of 706
-curret_repository = "/Users/yoshiki/Dropbox/Morass/MyJuliaCode"
 cd(curret_repository)
 println(pwd())
 using CSV
