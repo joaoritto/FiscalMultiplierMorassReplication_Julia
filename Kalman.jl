@@ -1,12 +1,23 @@
-## Kalman Filter
+## Kalman Filter and Smoother
 # Yoshiki, August 21st
 
+# State Space Representation
+# α_t = α_{t-1} + R η_t
+# y_t = Z α_t + ϵ_t + W
+# η_t ∼ N(0,Q), ϵ_t ∼ N(o,H)
+
+# Kalman Filter:
 # Input : T,R,Q,Z,H,W,data
 # Output: a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft
 
+# Kalman Smoother:
+# Input: T,R,Q,Z,H,W,data
+# Output: Smth_a, Smth_P
+
+
 
 ## Define the Function to run Kalman Filter
-function myKalman(T,R,Q,Z,H,W,data)
+function myKalmanFilter(T,R,Q,Z,H,W,data)
 
 ## Dimensions
 y   = data
@@ -21,6 +32,7 @@ Upd_a   = [zeros(mm,1)   for i=1:TT]
 Upd_P   = [zeros(mm,mm)  for i=1:TT]
 vt      = [zeros(NN,1)   for i=1:TT]
 Ft      = [zeros(NN,NN)  for i=1:TT]
+invFt   = [zeros(NN,NN)  for i=1:TT]
 
 ## (i) Initialization
 a0     = zeros(mm,1)
@@ -29,15 +41,19 @@ P0_dim = Int(sqrt(size(P0_v ,1)))
 P0     = reshape(P0_v,(P0_dim,P0_dim ) )
 
 ## (ii) Period 1
+# Prediction
 Pred_a[1] = T * a0
 Pred_P[1] = T * P0 * T' + R * Q  * R'
+
 vt[1]     = y[1,:] - Z * Pred_a[1] - W
 Ft[1]     = Z * Pred_P[1] * Z' + H
 if abs(det(Ft[1])) < 1.e-14
-    println("error (Ft is singular)")
+    return "error (Ft is singular)"
 end
-Upd_a[1]  = Pred_a[1] + Pred_P[1] * Z' * inv(Ft[1]) * vt[1]
-Upd_P[1]  = Pred_P[1] - Pred_P[1] * Z' * inv(Ft[1]) * Z * Pred_P[1]
+# Update
+invFt[1]  = inv(Ft[1])
+Upd_a[1]  = Pred_a[1] + Pred_P[1] * Z' * invFt[1] * vt[1]
+Upd_P[1]  = Pred_P[1] - Pred_P[1] * Z' * invFt[1] * Z * Pred_P[1]
 
 ## (ii) Period 2 onwards
 for tt = 2:TT
@@ -48,25 +64,62 @@ for tt = 2:TT
     vt[tt]     = y[tt,:] - Z * Pred_a[tt] - W
     Ft[tt]     = Z * Pred_P[tt] * Z' + H
     if abs(det(Ft[tt])) < 1.e-14
-        println("error (Ft is singular)")
+        return "error (Ft is singular)"
     end
 
     # Update
-    Upd_a[tt]  = Pred_a[tt] + Pred_P[tt] * Z' * inv(Ft[tt]) * vt[tt]
-    Upd_P[tt]  = Pred_P[tt] - Pred_P[tt] * Z' * inv(Ft[tt]) * Z * Pred_P[tt]
+    invFt[tt]  = inv(Ft[tt])
+    Upd_a[tt]  = Pred_a[tt] + Pred_P[tt] * Z' * invFt[tt] * vt[tt]
+    Upd_P[tt]  = Pred_P[tt] - Pred_P[tt] * Z' * invFt[tt] * Z * Pred_P[tt]
 end
 
 return a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft
 end
 
 
+## ## Define the Function to run Kalman Smoother
+function myKalmanSmoother(T,R,Q,Z,H,W,data)
+
+# Run Kalman Filter First
+a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft =  myKalmanFilter(T,R,Q,Z,H,W,data)
+
+## Dimensions
+y   = data
+TT  = size(y,1)  # Number of Periods
+mm  = size(T,1)  # Dimension of State
+
+## Solution Matrix
+
+Smth_a  = [zeros(mm,1)   for i=1:TT]
+Smth_P  = [zeros(mm,mm)  for i=1:TT]
+Jt      = [zeros(NN,NN)  for i=1:TT]
+
+## (i) Period TT
+Smth_a[TT] = Upd_a[TT]
+Smth_P[TT] = Upd_P[TT]
+
+
+## (ii) Period from TT-1 to 1
+
+for t1 = 1:TT-1
+    tt = TT - t1 # range from TT-1 to 1
+
+    Jt[tt]      = Upd_P[tt] * T' * inv(Pred_P[tt+1])
+    Smth_a[tt]  = Upd_a[tt] + Jt[tt] * (Smth_a[tt+1] - Pred_a[tt+1])
+    Smth_P[tt]  = Upd_P[tt] + Jt[tt] * (Smth_P[tt+1] - Pred_P[tt+1]) * (Jt[tt])'
+
+end
+
+return Smth_a, Smth_P
+end
 
 
 
 
 ## Check if it works properly
 # Download the csv.data used in Homework 2 of 706
-cd("/Users/yoshiki/Dropbox/Morass/MyJuliaCode")
+curret_repository = "/Users/yoshiki/Dropbox/Morass/MyJuliaCode"
+cd(curret_repository)
 println(pwd())
 using CSV
 rawData = CSV.read("gdpplus.csv")
@@ -81,11 +134,14 @@ data = reduce(hcat, data_demean) # Matrix Form
 
 # Use specific Parameters
 init = [0.5,2,2,2]
-T    = init[1] .*ones(1,1)
-R    = init[2]
+T    = init[1] .* diagm(ones(2))
+R    = init[2] .* diagm(ones(2))
 H    = diagm([init[3],init[4]]);
-Q    = ones(1,1);
-Z    = ones(2,1); W = zeros(2,1);
+Q    = [2 1; 1 2]
+Z    = ones(2,2); W = zeros(2,1);
 
 ## Use the Function
-a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft =  myKalman(T,R,Q,Z,H,W,data)
+# Kalman Filter
+a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft =  myKalmanFilter(T,R,Q,Z,H,W,data)
+# Kalman Smoother
+Smth_a, Smth_P =  myKalmanSmoother(T,R,Q,Z,H,W,data)
