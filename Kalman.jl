@@ -17,8 +17,11 @@
 current_repository = "/Users/yoshiki/Dropbox/Morass/MyJuliaCode"
 # I will use the csv file from Homework 2 of 706 "gdpplus.csv"
 
+using Statistics, LinearAlgebra
+
 ## Define the Function to run Kalman Filter
 function myKalmanFilter(T,R,Q,Z,H,W,data)
+
 
 ## Dimensions
 y   = data
@@ -88,6 +91,7 @@ a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft =  myKalmanFilter(T,R,Q,Z,H,W,data)
 y   = data
 TT  = size(y,1)  # Number of Periods
 mm  = size(T,1)  # Dimension of State
+NN  = size(y,2)  # Dimension of Observable Variables
 
 ## Solution Matrix
 
