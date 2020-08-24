@@ -144,9 +144,9 @@ function estimatedpara()
     return parameters
 end
 
-# Solving the model
+# Steady state
 
-function linearizedmodel(calibpara,estimpara,regime,path)
+function steadystate(calibpara,estimpara)
 
     AD=calibpara[1]
     β=calibpara[2]
@@ -233,6 +233,103 @@ function linearizedmodel(calibpara,estimpara,regime,path)
     cS=cSL*L
     g=gy*y
     b=by*y
+
+    return [v;R;ρ;PB;rk;phider1;mc;w;kL;ΩL;yL;iL;cL;zL;cNL;cSL;cstarSL;L;k;Ω;y;i;c;z;cN;cS;g;b]
+
+end
+
+# Solving the model
+
+function linearizedmodel(calibpara,estimpara,regime,path)
+
+    AD=calibpara[1]
+    β=calibpara[2]
+    α=calibpara[3]
+    δ=calibpara[4]
+    η_p=calibpara[5]
+    η_w=calibpara[6]
+    gy=calibpara[7]
+    by=calibpara[8]
+    π_ss=calibpara[9]
+    τK=calibpara[10]
+    τL=calibpara[11]
+    τC=calibpara[12]
+
+    γ=estimpara[1]
+    ξ=estimpara[2]
+    θ=estimpara[3]
+    μ=estimpara[4]
+    α_G=estimpara[5]
+    ψ=estimpara[6]
+    s=estimpara[7]
+    ω_p=estimpara[8]
+    ω_w=estimpara[9]
+    χ_p=estimpara[10]
+    χ_w=estimpara[11]
+    ϕ_πM=estimpara[12]
+    ϕ_πF=estimpara[13]
+    ϕ_y=estimpara[14]
+    ρ_r=estimpara[15]
+    γ_GM=estimpara[16]
+    γ_KM=estimpara[17]
+    γ_LM=estimpara[18]
+    γ_ZM=estimpara[19]
+    γ_GF=estimpara[20]
+    γ_KF=estimpara[21]
+    γ_LF=estimpara[22]
+    γ_ZF=estimpara[23]
+    ρ_K=estimpara[24]
+    ρ_G=estimpara[25]
+    ρ_L=estimpara[26]
+    ρ_Z=estimpara[27]
+    ρ_a=estimpara[28]
+    ρ_b=estimpara[29]
+    ρ_i=estimpara[30]
+    ρ_p=estimpara[31]
+    ρ_w=estimpara[32]
+    ρ_em=estimpara[33]
+    ρ_eg=estimpara[34]
+    ρ_ez=estimpara[35]
+    σ_a=estimpara[36]
+    σ_b=estimpara[37]
+    σ_i=estimpara[38]
+    σ_p=estimpara[39]
+    σ_w=estimpara[40]
+    σ_em=estimpara[41]
+    σ_eg=estimpara[42]
+    σ_ez=estimpara[43]
+
+    SS=steadystate(calibpara,estimpara)
+
+    v=SS[1]
+    R=SS[2]
+    ρ=SS[3]
+    PB=SS[4]
+    rk=SS[5]
+    phider1=SS[6]
+    mc=SS[7]
+    w=SS[8]
+    kL=SS[9]
+    yL=SS[10]
+    ΩL=SS[11]
+    iL=SS[12]
+    cL=SS[13]
+    zL=SS[14]
+    cNL=SS[15]
+    cSL=SS[16]
+    cstarSL=SS[17]
+    L=SS[18]
+    k=SS[19]
+    Ω=SS[20]
+    y=SS[21]
+    i=SS[22]
+    c=SS[23]
+    z=SS[24]
+    cN=SS[25]
+    cS=SS[26]
+    g=SS[27]
+    b=SS[28]
+
 
     # Log-linearized model
 
@@ -326,7 +423,7 @@ function linearizedmodel(calibpara,estimpara,regime,path)
     Γ_0[phillipscurve_eq,π_var]=1
     Γ_0[phillipscurve_eq,Eπ_var]=-β/(1+χ_p*β)
     Γ_0[phillipscurve_eq,mc_var]=-κ_p
-    Γ_1[phillipscurve_eq,up_var]=-1
+    Γ_0[phillipscurve_eq,up_var]=-1
 
     Γ_1[phillipscurve_eq,π_var]=χ_p/(1+χ_p*β)
 
@@ -703,17 +800,17 @@ function mygensys(Γ_0, Γ_1, constant, Ψ, Π)
             return G1, C, impact, qt', a, b, z, eu
         end
     end
-    movelast = Bool[(real(b[i, i] / a[i, i]) > root) || (abs(a[i, i]) < ϵ) for i in 1:n]
-    nunstab = sum(movelast)
-    FS = ordschur!(F, movelast)
+    movelast1 = Bool[(real(b[i, i] / a[i, i]) > root) || (abs(a[i, i]) < ϵ) for i in 1:n]
+    nunstab = sum(movelast1)
+    movelast=Bool[movelast1[i]==0 for i in 1:n]
+    FS = ordschur(F, movelast)
     a, b, qt, z = FS.S, FS.T, FS.Q, FS.Z
 
     qt1 = qt[1:(n - nunstab),:]
     qt2 = qt[(n - nunstab + 1):n,:]
     a2 = a[(n - nunstab + 1):n, (n - nunstab + 1):n]
     b2 = b[(n - nunstab + 1):n, (n - nunstab + 1):n]
-    etawt=zeros(nunstab,nunstab)
-    mul!(etawt,qt2, Π)
+    etawt=qt2*Π
     bigev, ueta, deta, veta = decomposition_svdct!(etawt)
     eu[1]=length(bigev)>=nunstab
     #zwt=zeros(nunstab,nunstab)
@@ -730,8 +827,7 @@ function mygensys(Γ_0, Γ_1, constant, Ψ, Π)
     #else
     #    println("Indeterminacy")
     #end
-    etawt1=zeros(n-nunstab,nunstab)
-    mul!(etawt1, qt1, Π)
+    etawt1=qt1*Π
     bigev, ueta1, deta1, veta1 = decomposition_svdct!(etawt1)
     #if existx | (nunstab == 0)
     #   eu[1] = 1
@@ -756,7 +852,7 @@ function mygensys(Γ_0, Γ_1, constant, Ψ, Π)
     usix = (n - nunstab + 1):n
     C = G0 \ vcat(tmat * (qt*constant), (a[usix, usix] .- b[usix, usix]) \ (qt2*constant))
     impact = G0 \ vcat(tmat * (qt*Ψ), zeros(nunstab, size(Ψ, 2)))
-    G1 = z * (G1*z)
+    G1 = z * (G1*z')
     G1 = real(G1)
     C = real(z * C)
     impact = real(z * impact)
@@ -790,4 +886,53 @@ function decomposition_svdct!(A)
     Ad = diagm(Asvd.S[bigev])
     Av = Asvd.V[:, bigev]
     return bigev, Au, Ad, Av
+end
+
+
+# Constructing the state space form with observables
+
+# Transition equation: α_t=T α_{t-1} + R η_t,    η_t is N(0,Q)
+# Measurement equation: y_t=Z α_t + W + ζ_t   ζ_t is N(0,H)
+
+function statespacematrices(G1,C,impact,path)
+
+    include(path*"variablesindices.jl")
+
+    num_statevariables=48
+    num_obsvariables=8
+    num_shocks=8
+
+    T=G1
+
+    R=impact
+
+    Q=Matrix(1I,num_shocks,num_shocks)
+
+    Z=zeros(num_obsvariables,num_statevariables)
+    Z[1,dcobs_var]=1
+    Z[2,diobs_var]=1
+    Z[3,dwobs_var]=1
+    Z[4,dgobs_var]=1
+    Z[5,dbobs_var]=1
+    Z[6,Lobs_var]=1
+    Z[7,πobs_var]=1
+    Z[8,Robs_var]=1
+
+    γ=estimpara[1]
+
+    W=zeros(num_obsvariables)
+    W[1]=γ*100
+    W[2]=γ*100
+    W[3]=γ*100
+    W[4]=γ*100
+    W[5]=γ*100
+    #W[6]=Lbar
+    #W[7]=π_ss
+    #W[8]=π_ss+Rbar
+
+    # Need to define what the steady state values in these last constants should equal to
+
+    H=zeros(num_obsvariables,num_obsvariables)
+
+    return T, R, Q, Z, H, W
 end
