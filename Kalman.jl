@@ -77,7 +77,7 @@ for tt = 2:TT
     Upd_P[tt]  = Pred_P[tt] - Pred_P[tt] * Z' * invFt[tt] * Z * Pred_P[tt]
 end
 
-return a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft
+return a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft, invFt
 end
 
 
@@ -85,7 +85,7 @@ end
 function myKalmanSmoother(T,R,Q,Z,H,W,data)
 
 # Run Kalman Filter First
-a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft =  myKalmanFilter(T,R,Q,Z,H,W,data)
+a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft, invFt =  myKalmanFilter(T,R,Q,Z,H,W,data)
 
 ## Dimensions
 y   = data
@@ -118,7 +118,31 @@ end
 return Smth_a, Smth_P
 end
 
+## Computing Log-Likelihood
 
+function myKalmanLogLikelihood(T,R,Q,Z,H,W,data)
+# Run Kalman Filter
+a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft,invFt =
+              myKalmanFilter(T,R,Q,Z,H,W,data)
+
+## Setup
+y   = data
+TT  = size(y,1)  # Number of Periods
+NN  = size(y,2)  # Dimension of Observable Variables
+mm  = size(T,1)  # Dimension of State
+Likelihood_t = zeros(TT) # Create a solution vector
+
+for t = 1:TT
+    Likelihood_t[t] = -0.5*log(abs(det(Ft[t]))) - (0.5* vt[t]' * (invFt[t])*vt[t])[1]
+end
+
+# ln(L) = -0.5 NN*TT*ln(2π) - 0.5*∑_{t=1:T} ln(|F_t|)
+#                           - 0.5*∑_{t=1:T} v_t'inv(F_t)*v_t
+Total_LogLike = -0.5*NN*TT*log(2*pi) + sum(Likelihood_t)
+
+return Total_LogLike
+
+end
 
 
 ## Check if it works properly
@@ -146,6 +170,8 @@ Z    = ones(2,2); W = zeros(2,1);
 
 ## Use the Function
 # Kalman Filter
-a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft =  myKalmanFilter(T,R,Q,Z,H,W,data)
+a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft,invFt =  myKalmanFilter(T,R,Q,Z,H,W,data)
 # Kalman Smoother
-Smth_a, Smth_P =  myKalmanSmoother(T,R,Q,Z,H,W,data)
+@time Smth_a, Smth_P =  myKalmanSmoother(T,R,Q,Z,H,W,data)
+
+@time LogLike =  myKalmanLogLikelihood(T,R,Q,Z,H,W,data)
