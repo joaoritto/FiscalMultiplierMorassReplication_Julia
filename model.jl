@@ -46,7 +46,7 @@ function estimatedpara()
     ξ=2.0 # Inverse Frisch labor elasticity
     θ=0.5 # Habit formation
     μ=0.3 # Fraction of non-savers
-    α_G=0.1 # Substitutability of private/public consumption
+    α_G=0.0 # Substitutability of private/public consumption
 
     # Frictions and production
     ψ=0.6 # Capital utilization
@@ -679,7 +679,7 @@ function linearizedmodel(calibpara,estimpara,regime,path)
 
     Γ_1[expectedλS_eq,EλS_var]=1
 
-    Π[expectedinvestment_eq,λS_experr]=1
+    Π[expectedλS_eq,λS_experr]=1
 
     # 34. Definition tobin q's expectations
     Γ_0[expectedq_eq,q_var]=1
@@ -767,7 +767,7 @@ function linearizedmodel(calibpara,estimpara,regime,path)
 
     # 46. Definition hours of work observable
     Γ_0[hoursobservable_eq,Lobs_var]=1
-    Γ_0[consumptionobservable_eq,L_var]=-100
+    Γ_0[hoursobservable_eq,L_var]=-100
 
     # 47. Definition deflator observable
     Γ_0[deflatorobservable_eq,πobs_var]=1
@@ -785,7 +785,7 @@ end
 
 function mygensys(Γ_0, Γ_1, constant, Ψ, Π)
     root=1
-    F=schur!(complex(Γ_0), complex(Γ_1))
+    F=schur(complex(Γ_0), complex(Γ_1))
     eu = [0, 0]
     a, b = F.S, F.T
     n = size(a, 1)
@@ -804,7 +804,7 @@ function mygensys(Γ_0, Γ_1, constant, Ψ, Π)
     nunstab = sum(movelast1)
     movelast=Bool[movelast1[i]==0 for i in 1:n]
     FS = ordschur(F, movelast)
-    a, b, qt, z = FS.S, FS.T, FS.Q, FS.Z
+    a, b, qt, z = FS.S, FS.T, FS.Q', FS.Z
 
     qt1 = qt[1:(n - nunstab),:]
     qt2 = qt[(n - nunstab + 1):n,:]
