@@ -129,6 +129,38 @@ Kalm_sm<-function(TTT,R,Q,Z,H,W,data) {
 }
 
 
+## Computing Lig-Likelihood
+Likelihood_Kalman<-function( TTT,R,Q,Z,H,W,data) {
+  
+  
+  dimS=dim(TTT)
+  dimS=dimS[1]
+  
+  Filtering=Kalm_f(TTT,R,Q,Z,H,W,data)
+  vt=Filtering[[5]]
+  Ft=Filtering[[6]]
+  
+  # Output
+  Total_lik=0
+  Lik=matrix(rep(0,TT),TT,1)
+  
+  for (t in 1:TT) {
+    F=Ft[[t]]
+    v=vt[t,]
+    if (abs(det(F))<1e-14) {
+      Total_lik=1000000
+      return(Total_lik)
+    } else {
+      invF=solve(F)
+      Lik[t,1]=-1/2*log(abs(det(F)))-1/2*t(v)%*%invF%*%v
+    }
+  }
+  
+  Total_lik=-0.5*dimS*TT*log(2*pi)+sum(Lik)
+  return(Total_lik)
+}
+
+
 ## Try (1 dimension state)
 init = c(0.5,2,2,2)
 TTT  = init[1] * matrix(1,1,1)
@@ -157,6 +189,7 @@ W    = c(0,0);
 
 AA2 = Kalm_f(TTT,R,Q,Z,H,W,data)
 AA3 = Kalm_sm(TTT,R,Q,Z,H,W,data)
+LogLikelihood1 = Likelihood_Kalman( TTT,R,Q,Z,H,W,data)
 
 
 ```
