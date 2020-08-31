@@ -385,13 +385,14 @@ function linearizedmodel(calibpara,estimpara,regime,path)
     hoursobservable_eq=46
     deflatorobservable_eq=47
     fedfundsobservable_eq=48
+    fisher_eq=49
 
     # Writing the equations
 
     # Γ_0 y_t=Γ_1 y_{t-1} + constant + Ψ z_t + Π η_t
 
-    num_var=48
-    num_eq=48 # Needs to be the same as num_var!
+    num_var=49
+    num_eq=49 # Needs to be the same as num_var!
     num_shocks=8
     num_experr=9
 
@@ -777,6 +778,11 @@ function linearizedmodel(calibpara,estimpara,regime,path)
     Γ_0[fedfundsobservable_eq,Robs_var]=1
     Γ_0[fedfundsobservable_eq,R_var]=-100
 
+    # 49. Fisher equation
+    Γ_0[fisher_eq,rr_var]=1
+    Γ_0[fisher_eq,R_var]=-1
+    Γ_0[fisher_eq,Eπ_var]=1
+
 
     return Γ_0, Γ_1, constant, Ψ, Π
 end
@@ -845,14 +851,14 @@ function mygensys(Γ_0, Γ_1, constant, Ψ, Π)
        eu[2] = 1
     end
 
-    tmat = hcat(I, -(ueta*(deta\veta')*veta1*deta1*ueta1')')
+    tmat = hcat(I, -ueta1 * deta1 *(veta1'*veta) * (deta \ ueta'))
     G0 =  vcat(tmat * a, hcat(zeros(nunstab, n - nunstab), I))
     G1 =  vcat(tmat * b, zeros(nunstab, n))
     G1 = G0 \ G1
     usix = (n - nunstab + 1):n
     C = G0 \ vcat(tmat * (qt*constant), (a[usix, usix] .- b[usix, usix]) \ (qt2*constant))
     impact = G0 \ vcat(tmat * (qt*Ψ), zeros(nunstab, size(Ψ, 2)))
-    G1 = z * (G1*z')
+    G1 = z * G1*z'
     G1 = real(G1)
     C = real(z * C)
     impact = real(z * impact)
@@ -880,7 +886,7 @@ end
 
 function decomposition_svdct!(A)
     ϵ=1e-6
-    Asvd = svd(A)
+    Asvd = svd(A,full=true)
     bigev = findall(Asvd.S .> ϵ)
     Au = Asvd.U[:, bigev]
     Ad = diagm(Asvd.S[bigev])
@@ -894,11 +900,11 @@ end
 # Transition equation: α_t=T α_{t-1} + R η_t,    η_t is N(0,Q)
 # Measurement equation: y_t=Z α_t + W + ζ_t   ζ_t is N(0,H)
 
-function statespacematrices(G1,C,impact,path)
+function statespacematrices(G1,C,impact,estimpara,path)
 
     include(path*"variablesindices.jl")
 
-    num_statevariables=48
+    num_statevariables=49
     num_obsvariables=8
     num_shocks=8
 
