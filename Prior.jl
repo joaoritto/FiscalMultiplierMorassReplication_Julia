@@ -108,8 +108,19 @@ end
 
 priorpara = DrawParaFromPrior()
 
+# Check that this function generates random variables with targetter mean
+# aa = [DrawParaFromPrior() for i=1:10000]
+# println(mean(aa))
 
-## ## Evaluate Density of each value
+## Evaluate Density of each value
+
+γ  = rand(Normal(0.4, 0.05))/100
+pdf(Normal(0.4, 0.05), 100γ )
+
+# Check if it works properly
+vγ   = -3:0.01:3
+vpdf = pdf(Normal(), vγ )
+plot(vγ,vpdf)
 
 ## Create Functions to evaluate pdf
 # using Pkg ; Pkg.add("SpecialFunctions")
@@ -122,6 +133,13 @@ function myGammaPdf(μ, σ, value)
    return pdf_temp
 end
 
+# Check if it works well
+α1 = 2; β1 = 2;
+μ1 = α1 * β1; σ1 = sqrt(α1 * β1^2)
+vGamma   = reshape(0.01:0.01:10, length(0.01:0.01:10), 1)
+vpdfGamma= [myGammaPdf(μ1, σ1, vGamma[i,1]) for i=1:length(vGamma)]
+plot(vGamma[:,1],vpdfGamma[:,1])
+
 ## Beta Function
 function myBetaPdf(μ,σ, value) #return a draw from Beta Dist with (μ,σ)
    α         = ( (1-μ)/σ^2 - 1/μ ) * μ^2 ; # compute α in Β dist
@@ -129,6 +147,16 @@ function myBetaPdf(μ,σ, value) #return a draw from Beta Dist with (μ,σ)
    pdf_temp = pdf(Beta(α, β),value)
    return pdf_temp
 end
+
+# Check if it works well
+α2 = 2; β2 = 2;
+μ2 = α2/(α2+β2)
+σ2 = sqrt(α2 * β2 / ( (α2+β2)^2*(α2+β2+1))  )
+
+vBeta    = [0.01:0.01:1]
+vpdfBeta = [myBetaPdf(μ2, σ2, vBeta[i]) for i=1:length(vBeta)]
+plot(vBeta[:,1],vpdfBeta[:,1])
+
 
 ## Uniform Distribution
 function myUniPdf(μ, σ, value)
@@ -138,6 +166,15 @@ function myUniPdf(μ, σ, value)
    return pdf_temp
 end
 
+# Check if it works well
+α3 = -1.749; β3 = 1.749;
+μ3 = 0.5*(α3 + β3)
+σ3 = sqrt( (α3-β3)^2/12 )
+
+vUni     = [-2:0.01:2]
+vpdfUni  = [myUniPdf(μ3, σ3, vUni[i]) for i=1:length(vUni)]
+plot(vUni[:,1],vpdfUni[:,1])
+
 
 ## Inverse Gamma Distribution
 function myInvΓPdf(μ,σ, value)
@@ -146,6 +183,16 @@ function myInvΓPdf(μ,σ, value)
    pdf_temp = pdf(InverseGamma(α,θ),value)
    return pdf_temp
 end
+
+# Check if it works well
+α4 = 3; β4 = 1;
+μ4 = β4/(α4-1)
+σ4 = sqrt( β4^2/((α4-1)^2*(α4-2)) )
+
+vInvG     = [0.01:0.01:3]
+vpdfInvG  = [myInvΓPdf(μ4, σ4, vInvG[i]) for i=1:length(vInvG)]
+plot(vInvG[:,1],vpdfInvG[:,1])
+
 
 
 ## Function to Evaluate the density for each parameter value
@@ -218,3 +265,69 @@ paraPdf =
 end
 
 pdf1 = ParaDensity(priorpara )
+
+## Test if it works properly
+Ntry        = 1000
+TryMatrix   = zeros(length(priorpara), Ntry)
+
+for jj = 1:Ntry
+priorpara1  = DrawParaFromPrior()
+paraPdf1    = ParaDensity(priorpara1 )
+
+vPrior       = [DrawParaFromPrior() for i = 1:1000]
+vParaPdf     = [ParaDensity(vPrior[i] ) for i = 1:1000]
+vPdfRelative = [vParaPdf[i]./paraPdf1 for i = 1:1000]
+TryMatrix[:,jj] = mean(vPdfRelative)
+end
+println(mean(TryMatrix,dims = 2))
+
+## Create a function to return Joint Density
+# input: vDensities, estimpararestric,regime,subsorcompl
+# vDensities: a vector of density (after applying the function "ParaDensity")
+# This is supposed to be "relative" densities (ratio of two density vectors)
+
+# draw Parameters
+calibpara0=calibratedpara()
+estimpara0=DrawParaFromPrior()
+
+# Apply the fuction modelrestrictions
+calibpara,estimpara,calibpararestric,estimpararestric,regime,subsorcompl =
+     modelrestrictions(2.1,calibpara0,estimpara0)
+
+# Vector of Densities
+vDensities = ParaDensity(estimpara0 )
+
+println(estimpararestric)
+println(vDensities)
+
+
+
+function JointDensities(vDensities, estimpararestric,regime)
+
+vDensities2 = vDensities.* estimpararestric + (1 .- estimpararestric)
+
+if regime == "M"
+   regimeM01 = ones(Int64,43)
+   regimeM01[[13,20,21,22,23]] = zeros(Int64,5) # create a vector similar to estimpararestric
+   vDensities3 = vDensities.* regimeM01 + (1 .- regimeM01)
+else # regime "F"
+   regimeF01 = ones(Int64,43)
+   regimeF01[[12,16,17,18,19]] = zeros(Int64,5)
+   vDensities3 = vDensities.* regimeF01 + (1 .- regimeF01)
+end
+JointDensity = prod(vDensities3)
+   return JointDensity
+end
+
+JointDensity1 =  JointDensities(vDensities, estimpararestric,regime)
+
+## Try with Relative Densities
+# Draw Two Prior Paramters
+estimpara1=DrawParaFromPrior()
+estimpara2=DrawParaFromPrior()
+# Compute the Density of these parameters
+vDensities1 = ParaDensity(estimpara1 )
+vDensities2 = ParaDensity(estimpara2 )
+
+vDensities3   =  vDensities1 ./ vDensities2
+JointDensity2 =  JointDensities(vDensities3, estimpararestric,regime)
