@@ -265,27 +265,36 @@ paraPdf =
 end
 
 pdf1 = ParaDensity(priorpara )
+prod(pdf1)
 
-## Test if it works properly
-Ntry        = 1000
+# Check when some density is zero
+priorpara[5] = 2
+pdf1 = ParaDensity(priorpara )
+prod(pdf1)
+
+" ## Test if it works properly
+Ntry        = 100
 TryMatrix   = zeros(length(priorpara), Ntry)
 
 for jj = 1:Ntry
 priorpara1  = DrawParaFromPrior()
 paraPdf1    = ParaDensity(priorpara1 )
 
-vPrior       = [DrawParaFromPrior() for i = 1:1000]
-vParaPdf     = [ParaDensity(vPrior[i] ) for i = 1:1000]
-vPdfRelative = [vParaPdf[i]./paraPdf1 for i = 1:1000]
+vPrior       = [DrawParaFromPrior() for i = 1:100]
+vParaPdf     = [ParaDensity(vPrior[i] ) for i = 1:100]
+vPdfRelative = [vParaPdf[i]./paraPdf1 for i = 1:100]
 TryMatrix[:,jj] = mean(vPdfRelative)
 end
 println(mean(TryMatrix,dims = 2))
+"
 
 ## Create a function to return Joint Density
 # input: vDensities, estimpararestric,regime,subsorcompl
 # vDensities: a vector of density (after applying the function "ParaDensity")
-# This is supposed to be "relative" densities (ratio of two density vectors)
+# return the vector of densities
+# where the density irrelevant parameters are replaced to one
 
+"  # This is a setup to check if the function works properly
 # draw Parameters
 calibpara0=calibratedpara()
 estimpara0=DrawParaFromPrior()
@@ -299,10 +308,10 @@ vDensities = ParaDensity(estimpara0 )
 
 println(estimpararestric)
 println(vDensities)
+"
 
 
-
-function JointDensities(vDensities, estimpararestric,regime)
+function JointDensities(vDensities, estimpararestric,regime, subsorcompl)
 
 vDensities2 = vDensities.* estimpararestric + (1 .- estimpararestric)
 
@@ -315,12 +324,18 @@ else # regime "F"
    regimeF01[[12,16,17,18,19]] = zeros(Int64,5)
    vDensities3 = vDensities.* regimeF01 + (1 .- regimeF01)
 end
-JointDensity = prod(vDensities3)
-   return JointDensity
+
+if subsorcompl==1
+   vDensities3[5] = 2*vDensities3[5]
 end
 
-JointDensity1 =  JointDensities(vDensities, estimpararestric,regime)
+   return vDensities3
+end
 
+JointDensity1 =  JointDensities(vDensities, estimpararestric,regime,subsorcompl)
+prod(JointDensity1)
+
+" # Check if it works okay
 ## Try with Relative Densities
 # Draw Two Prior Paramters
 estimpara1=DrawParaFromPrior()
@@ -330,4 +345,6 @@ vDensities1 = ParaDensity(estimpara1 )
 vDensities2 = ParaDensity(estimpara2 )
 
 vDensities3   =  vDensities1 ./ vDensities2
-JointDensity2 =  JointDensities(vDensities3, estimpararestric,regime)
+JointDensity2 =  JointDensities(vDensities3, estimpararestric,regime, subsorcompl)
+prod(JointDensity2)
+"
