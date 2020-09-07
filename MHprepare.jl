@@ -1,6 +1,5 @@
 ## Preparation for Metropolis-Hastings Algorithm
 # Please have "data.mat" (from Leeper's replication folder) in the current directory
-include(path*"Kalman.jl")
 
 ## Load Data
 function get_data(d1d,d2d,USdata) # correspond to "get_data" in Leeper
@@ -34,97 +33,102 @@ d2d      = 2007.4;        # last quarter in estimation
 obsdata = get_data(d1d,d2d,USdata)
 
 ## Create a vector of standard deviations from Prior Distributions
+num_estimpara=43
 
-vSD = [0.05/100,0.5,0.2,0.1,1.01,0.15,1.5,0.2,0.2,0.2,0.2, # χ_w
+
+Σ0=Diagonal([0.05/100,0.5,0.2,0.1,1.01,0.15,1.5,0.2,0.2,0.2,0.2, # χ_w
         0.2,0.15,0.05,0.2,0.1,0.1,0.1,0.1,0.001,0.001,0.001,0.001,# γ_ZF
         0.2,0.2,0.2,0.2, 0.2,0.2,0.2,0.2,0.2, 0.15,0.15,0.15, # ρ_ez
-        1/100,1/100,1/100,1/100, 1/100,1/100,1/100,1/100,]
+        1/100,1/100,1/100,1/100, 1/100,1/100,1/100,1/100])
 
 ## Function for Metropolis-Hastings Algorithm
 
-function myMH(model, simlen, cc, initialdraw, vSD,  obsdata   )
-## Take the "estimpararestric, regime, subsorcompl"
-# Specify the Model
-current_model = model
-# Apply the function "modelrestrictions"
-calibpara0=calibratedpara();
-estimpara00=DrawParaFromPrior()
-calibpara,estimpara,calibpararestric,estimpararestric,regime,subsorcompl =
-             modelrestrictions(current_model,calibpara0,estimpara00)
-# global regime
+function myMH(model, simlen, cc, initialdraw, Σ,  obsdata   )
+        ## Take the "estimpararestric, regime, subsorcompl"
+        # Specify the Model
+        current_model = model
+        # Apply the function "modelrestrictions"
+        calibpara0=calibratedpara();
+        estimpara00=DrawParaFromPrior()
+        calibpara,estimpara,calibpararestric,estimpararestric,regime,subsorcompl =
+                     modelrestrictions(current_model,calibpara0,estimpara00)
+        # global regime
 
-## Array to Store the Parameters drawn
-para_drawn = [zeros(length(vSD)) for i = 1:simlen]
+        ## Array to Store the Parameters drawn
+        para_drawn = [zeros(size(Σ,1)) for i = 1:simlen]
 
-priorcount = 0; acceptcount = 0; postlast = -1e12;
+        priorcount = 0; acceptcount = 0; postlast = -1e12;
 
-## Initial Value
-# Just Draw from the Prior Distribution
-lastdraw = initialdraw
+        ## Initial Value
+        # Just Draw from the Prior Distribution
+        lastdraw = initialdraw
 
-## Start the Algorithm
- for ii = 1:simlen
+        # Cholesky decomposition
+        P=factorize(Σ)
 
-# Draw a candidate by θ = θ^{i-1} + η, where η ∼ N(0,c²Σ)
-cand_draw = lastdraw + cc^2 * randn(length(vSD)) .* vSD
 
-        # checks if ant σ parameters are negative
-        # Otherwise, evaluate the densities of candidate parameters
-        cand_σ_sign = prod(cand_draw[end-7:end] .> 0) # false if any of σ is negative
-        if cand_σ_sign== false
-                cand_density = zeros(length(vSD))
-         println("false (σ_sign)")
-        else
-        # Evaluate the Densities
-        cand_pdf1     = ParaDensity(cand_draw ) # Evaluate the Density
-        cand_density  = JointDensities(cand_pdf1 , # Replace the irrelevant density by 1
-                                       estimpararestric, regime, subsorcompl)
+        ## Start the Algorithm
+         for ii = 1:simlen
+
+        # Draw a candidate by θ = θ^{i-1} + η, where η ∼ N(0,c²Σ)
+        cand_draw = lastdraw + cc*P* randn(size(Σ,1))
+
+                # checks if ant σ parameters are negative
+                # Otherwise, evaluate the densities of candidate parameters
+                cand_σ_sign = prod(cand_draw[end-7:end] .> 0) # false if any of σ is negative
+                if cand_σ_sign== false
+                        cand_density = zeros(length(vSD))
+                 println("false (σ_sign)")
+                else
+                # Evaluate the Densities
+                cand_pdf1     = ParaDensity(cand_draw ) # Evaluate the Density
+                cand_density  = JointDensities(cand_pdf1 , # Replace the irrelevant density by 1
+                                               estimpararestric, regime, subsorcompl)
+                end
+
+                # If we want, we could keep drawing until cand_density_positive == true
+                # with "while" loop. But Leeper et al. didn't do so.
+                # cand_density_positive = prod(cand_density) > 1e-15
+                # println([prod(cand_density), prod(cand_draw[end-7:end])])
+
+                if prod(cand_density) < 1e-15
+                          priorcount  = priorcount + 1  # global
+                        postcand   = - 1e5
+                          lastdraw    = lastdraw        # global
+
+                else # density of the draw is not zero
+                        " Solve the model + Evaluate the Likelihood"
+                        # Structural Model
+                       calibpara,estimpara,calibparar,estimparar,regime,subsorcompl=
+                               modelrestrictions(current_model,calibpara0,cand_draw)
+                       Γ_0, Γ_1, constant, Ψ, Π = linearizedmodel(calibpara,estimpara,regime,path)
+
+                       # Express in State-Space Form
+                       G1, C, impact, qt, a, b, z, eu=mygensys(Γ_0,Γ_1,constant,Ψ,Π)
+                       T, R, Q, Z, H, W=statespacematrices(G1,C,impact,estimpara,path)
+
+                       # Evaluate the Likelihood
+                       candlike = myKalmanLogLikelihood(T,R,Q,Z,H,W,obsdata)
+                       postcand = log(prod(cand_density)) + candlike
+                       println(candlike)
+
+                       " Accept if likelihood is high enough"
+                       if min( exp(postcand - postlast),1) > rand()
+                                 acceptcount = acceptcount + 1 # global
+                                 lastdraw    = cand_draw       # global
+                                 postlast    = postcand
+                       else
+                                 priorcount  = priorcount + 1  # global
+                                 lastdraw    = lastdraw        # global
+                       end
+
+                end
+
+                para_drawn[ii] =  lastdraw
+                println("Accept:", acceptcount,", Reject:", priorcount  )
+                # global regime, subsorcompl, calibpara0
+
         end
-
-        # If we want, we could keep drawing until cand_density_positive == true
-        # with "while" loop. But Leeper et al. didn't do so.
-        # cand_density_positive = prod(cand_density) > 1e-15
-        # println([prod(cand_density), prod(cand_draw[end-7:end])])
-
-if prod(cand_density) < 1e-15
-          priorcount  = priorcount + 1  # global
-        postcand   = - 1e5
-          lastdraw    = lastdraw        # global
-
-else # density of the draw is not zero
-        " Solve the model + Evaluate the Likelihood"
-        # Structural Model
-       calibpara,estimpara,calibparar,estimparar,regime,subsorcompl=
-               modelrestrictions(current_model,calibpara0,cand_draw)
-       Γ_0, Γ_1, constant, Ψ, Π = linearizedmodel(calibpara,estimpara,regime,path)
-
-       # Express in State-Space Form
-       G1, C, impact, qt, a, b, z, eu=mygensys(Γ_0,Γ_1,constant,Ψ,Π)
-       T, R, Q, Z, H, W=statespacematrices(G1,C,impact,estimpara,path)
-
-       # Evaluate the Likelihood
-       candlike = myKalmanLogLikelihood(T,R,Q,Z,H,W,obsdata)
-       postcand = log(prod(cand_density)) + candlike
-       println(candlike)
-
-       " Accept if likelihood is high enough"
-       if min( exp(postcand - postlast),1) > rand()
-                 acceptcount = acceptcount + 1 # global
-                 lastdraw    = cand_draw       # global
-                 postlast    = postcand
-       else
-                 priorcount  = priorcount + 1  # global
-                 lastdraw    = lastdraw        # global
-       end
-
-end
-
-para_drawn[ii] =  lastdraw
-# global regime, subsorcompl, calibpara0
-
-println("Accept:", acceptcount,", Reject:", priorcount  )
-
-end
         return para_drawn, acceptcount, priorcount
 end
 
