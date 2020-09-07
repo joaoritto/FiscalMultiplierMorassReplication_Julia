@@ -119,8 +119,8 @@ pdf(Normal(0.4, 0.05), 100γ )
 
 # Check if it works properly
 vγ   = -3:0.01:3
-vpdf = pdf(Normal(), vγ )
-plot(vγ,vpdf)
+# vpdf = pdf(Normal(), vγ )
+# plot(vγ,vpdf)
 
 ## Create Functions to evaluate pdf
 # using Pkg ; Pkg.add("SpecialFunctions")
@@ -144,7 +144,7 @@ plot(vGamma[:,1],vpdfGamma[:,1])
 function myBetaPdf(μ,σ, value) #return a draw from Beta Dist with (μ,σ)
    α         = ( (1-μ)/σ^2 - 1/μ ) * μ^2 ; # compute α in Β dist
    β        = α * (1/μ - 1);              # compute β in Β dist
-   pdf_temp = pdf(Beta(α, β),value)
+   pdf_temp = pdf.(Beta(α, β),value)
    return pdf_temp
 end
 
@@ -162,7 +162,7 @@ plot(vBeta[:,1],vpdfBeta[:,1])
 function myUniPdf(μ, σ, value)
    β          =  μ + 3^0.5 * σ
    α          =  2 * μ - β
-   pdf_temp   = pdf(Uniform(α, β),value)
+   pdf_temp   = pdf.(Uniform(α, β),value)
    return pdf_temp
 end
 
@@ -180,7 +180,7 @@ plot(vUni[:,1],vpdfUni[:,1])
 function myInvΓPdf(μ,σ, value)
    α = μ^2/σ^2 + 2
    θ = μ* ( α -1)
-   pdf_temp = pdf(InverseGamma(α,θ),value)
+   pdf_temp = pdf.(InverseGamma(α,θ),value)
    return pdf_temp
 end
 
@@ -332,10 +332,11 @@ end
    return vDensities3
 end
 
+" # Check if it works okay
 JointDensity1 =  JointDensities(vDensities, estimpararestric,regime,subsorcompl)
 prod(JointDensity1)
 
-" # Check if it works okay
+
 ## Try with Relative Densities
 # Draw Two Prior Paramters
 estimpara1=DrawParaFromPrior()
@@ -348,3 +349,5 @@ vDensities3   =  vDensities1 ./ vDensities2
 JointDensity2 =  JointDensities(vDensities3, estimpararestric,regime, subsorcompl)
 prod(JointDensity2)
 "
+
+;

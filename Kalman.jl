@@ -51,7 +51,7 @@ Pred_P[1] = T * P0 * T' + R * Q  * R'
 
 vt[1]     = y[1,:] - Z * Pred_a[1] - W
 Ft[1]     = Z * Pred_P[1] * Z' + H
-if abs(det(Ft[1])) < 1.e-14
+if abs(det(Ft[1])) <= 0
     return "error (Ft is singular)"
 end
 # Update
@@ -67,7 +67,7 @@ for tt = 2:TT
 
     vt[tt]     = y[tt,:] - Z * Pred_a[tt] - W
     Ft[tt]     = Z * Pred_P[tt] * Z' + H
-    if abs(det(Ft[tt])) < 1.e-14
+    if abs(det(Ft[tt])) <= 0 
         return "error (Ft is singular)"
     end
 
@@ -124,6 +124,10 @@ function myKalmanLogLikelihood(T,R,Q,Z,H,W,data)
 # Run Kalman Filter
 a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft,invFt =
               myKalmanFilter(T,R,Q,Z,H,W,data)
+    # If Ft is singular, return LogLike = - e^10
+             if myKalmanFilter(T,R,Q,Z,H,W,data) == "error (Ft is singular)"
+                 Total_LogLike = -1e10
+             else
 
 ## Setup
 y   = data
@@ -140,6 +144,8 @@ end
 #                           - 0.5*∑_{t=1:T} v_t'inv(F_t)*v_t
 Total_LogLike = -0.5*NN*TT*log(2*pi) + sum(Likelihood_t)
 
+end
+
 return Total_LogLike
 
 end
@@ -149,10 +155,11 @@ end
 # Download the csv.data used in Homework 2 of 706
 cd(current_repository)
 println(pwd())
-using CSV
-rawData = CSV.read("gdpplus.csv")
-data_TS = rawData[41:236,[1,5,6]]
+# using CSV
+# rawData = CSV.read("gdpplus.csv")
+# data_TS = rawData[41:236,[1,5,6]]
 
+"
 # Demean the data
 GDE_mean    = mean(data_TS.GRGDP_DATA)
 GDI_mean    = mean(data_TS.GRGDI_DATA)
@@ -175,3 +182,7 @@ a0,P0,Pred_a,Pred_P,Upd_a,Upd_P,vt,Ft,invFt =  myKalmanFilter(T,R,Q,Z,H,W,data)
 @time Smth_a, Smth_P =  myKalmanSmoother(T,R,Q,Z,H,W,data)
 
 @time LogLike =  myKalmanLogLikelihood(T,R,Q,Z,H,W,data)
+
+"
+;
+;
