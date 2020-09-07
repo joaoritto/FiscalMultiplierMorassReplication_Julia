@@ -9,7 +9,8 @@ include(path*"model.jl")
 include(path*"PVmultiplier.jl")
 include(path*"modelrestrictions.jl")
 include(path*"priorpredictiveanalysis.jl")
+include(path*"Kalman.jl")
 
-N=200
+N=1000
 
 Table_y,Table_c,Table_i=table3(N,path)

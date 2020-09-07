@@ -64,17 +64,10 @@ function PVmultiplier(calibpara,estimpara,path,T,R,Q,Z,H,W)
         i_t[t]=iss*exp(logi_t[t])
         g_t[t]=gss*exp(logg_t[t])
         rr_t[t]=(Rss/πss)*exp(logrr_t[t])
-#        if t==1
-            dy_t[t]=y_t[t]-yss
-            dc_t[t]=c_t[t]-css
-            di_t[t]=i_t[t]-iss
-            dg_t[t]=g_t[t]-gss
-#        else
-#            dy_t[t]=y_t[t]-y_t[t-1]
-#            dc_t[t]=c_t[t]-c_t[t-1]
-#            di_t[t]=i_t[t]-i_t[t-1]
-#            dg_t[t]=g_t[t]-g_t[t-1]
-#        end
+        dy_t[t]=y_t[t]-yss
+        dc_t[t]=c_t[t]-css
+        di_t[t]=i_t[t]-iss
+        dg_t[t]=g_t[t]-gss
         discdy_t[t]=dy_t[t]/prod(rr_t[1:t])
         discdc_t[t]=dc_t[t]/prod(rr_t[1:t])
         discdi_t[t]=di_t[t]/prod(rr_t[1:t])

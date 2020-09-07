@@ -28,6 +28,10 @@
 # 4.11 Regime F, complements, short debt, no tax
 # 4.12 Regime F, complements, long debt, no tax
 
+# 5 (For the estimation) New Keynesian G in utility
+# 5.1 Regime M, unrestricted, ss tax only
+# 5.2 Regime F, unrestricted, ss tax only
+
 function modelrestrictions(model,calibpara0,estimpara0)
 
     lcalibpara=length(calibpara0)
@@ -39,7 +43,7 @@ function modelrestrictions(model,calibpara0,estimpara0)
     changeestimpara=zeros(lestimpara)
     subsorcompl=0
 
-    if model==1.1
+    if model=="1.1"
 
         regime="M"
 
@@ -69,7 +73,7 @@ function modelrestrictions(model,calibpara0,estimpara0)
         changeestimpara[4]=0.0 # μ
         changeestimpara[5]=0.0 # α_G
 
-    elseif model==2.1
+    elseif model=="2.1"
 
         regime="M"
 
@@ -81,7 +85,7 @@ function modelrestrictions(model,calibpara0,estimpara0)
         changeestimpara[4]=0.0 # μ
         changeestimpara[5]=0.0 # α_G
 
-    elseif model==2.2
+    elseif model=="2.2"
 
         regime="F"
 
@@ -95,7 +99,7 @@ function modelrestrictions(model,calibpara0,estimpara0)
         changeestimpara[5]=0.0 # α_G
         changecalibpara[1]=1.0 # AD
 
-    elseif model==2.3
+    elseif model=="2.3"
 
         regime="F"
 
@@ -107,7 +111,7 @@ function modelrestrictions(model,calibpara0,estimpara0)
         changeestimpara[4]=0.0 # μ
         changeestimpara[5]=0.0 # α_G
 
-    elseif model==3.1
+    elseif model=="3.1"
 
         regime="M"
 
@@ -117,7 +121,7 @@ function modelrestrictions(model,calibpara0,estimpara0)
 
         changeestimpara[5]=0.0 # α_G
 
-    elseif model==3.2
+    elseif model=="3.2"
 
         regime="F"
 
@@ -129,7 +133,7 @@ function modelrestrictions(model,calibpara0,estimpara0)
         changeestimpara[5]=0.0 # α_G
         changecalibpara[1]=1.0 # AD
 
-    elseif model==3.3
+    elseif model=="3.3"
 
         regime="F"
 
@@ -139,239 +143,325 @@ function modelrestrictions(model,calibpara0,estimpara0)
 
         changeestimpara[5]=0.0 # α_G
 
-    elseif model==4.1
+    elseif model=="4.1"
 
         regime="M"
         subsorcompl=1
 
-        # α_G>0
+        # μ=0, α_G>0
+
+        estimpararestric[4]=0 # μ
+
+        changeestimpara[4]=0.0 # μ
 
         if estimpara0[5]<0
             estimpararestric[5]=0 # α_G
 
-            changeestimpara[5]=abs(estimpara0[5])-estimpara0[5] # α_G
+            changeestimpara[5]=abs(estimpara0[5]) # α_G
         end
 
-    elseif model==4.2
+    elseif model=="4.2"
 
         regime="M"
         subsorcompl=1
 
-        # α_G<0
+        # μ=0, α_G<0
+
+        estimpararestric[4]=0 # μ
+
+        changeestimpara[4]=0.0 # μ
 
         if estimpara0[5]>0
             estimpararestric[5]=0 # α_G
 
-            changeestimpara[5]=-(estimpara0[5])-estimpara0[5] # α_G
+            changeestimpara[5]=-(estimpara0[5]) # α_G
         end
 
-    elseif model==4.3
+    elseif model=="4.3"
 
         regime="M"
         subsorcompl=1
 
-        # α_G<0, γ_KM=γ_LM=ρ_K=ρ_L=0
+        # μ=0, α_G<0, γ_KM=γ_LM=ρ_K=ρ_L=0
 
-        estimpararestric[17]=0
-        estimpararestric[18]=0
-        estimpararestric[25]=0
-        estimpararestric[26]=0
+        estimpararestric[4]=0 # μ
+        estimpararestric[17]=0 # γ_KM
+        estimpararestric[18]=0 # γ_LM
+        estimpararestric[25]=0 # ρ_K
+        estimpararestric[26]=0 # ρ_L
 
-        changeestimpara[17]=0.0
-        changeestimpara[18]=0.0
-        changeestimpara[25]=0.0
-        changeestimpara[26]=0.0
+        changeestimpara[4]=0.0 # μ
+        changeestimpara[17]=0.0 # γ_KM
+        changeestimpara[18]=0.0 # γ_LM
+        changeestimpara[25]=0.0 # ρ_K
+        changeestimpara[26]=0.0 # ρ_L
+
 
         if estimpara0[5]>0
             estimpararestric[5]=0 # α_G
 
-            changeestimpara[5]=-(estimpara0[5])-estimpara0[5] # α_G
+            changeestimpara[5]=-(estimpara0[5]) # α_G
         end
 
-    elseif model==4.4 # To do, needs to shutdown steady state taxes too
+    elseif model=="4.4"
 
         regime="M"
         subsorcompl=1
 
-        # α_G<0, γ_KM=γ_LM=ρ_K=ρ_L=0
+        # μ=0, α_G<0, γ_KM=γ_LM=ρ_K=ρ_L=0, τK=τL=τC=0 (steady state values)
 
-        estimpararestric[17]=0
-        estimpararestric[18]=0
-        estimpararestric[25]=0
-        estimpararestric[26]=0
+        estimpararestric[4]=0 # μ
+        estimpararestric[17]=0 # γ_KM
+        estimpararestric[18]=0 # γ_LM
+        estimpararestric[25]=0 # ρ_K
+        estimpararestric[26]=0 # ρ_L
+        calibpararestric[10]=0 # τK
+        calibpararestric[11]=0 # τL
+        calibpararestric[12]=0 # τC
 
-        changeestimpara[17]=0.0
-        changeestimpara[18]=0.0
-        changeestimpara[25]=0.0
-        changeestimpara[26]=0.0
+        changeestimpara[4]=0.0 # μ
+        changeestimpara[17]=0.0 # γ_KM
+        changeestimpara[18]=0.0 # γ_LM
+        changeestimpara[25]=0.0 # ρ_K
+        changeestimpara[26]=0.0 # ρ_L
+        changecalibpara[10]=0.0 # τK
+        changecalibpara[11]=0.0 # τL
+        changecalibpara[12]=0.0 # τC
 
         if estimpara0[5]>0
             estimpararestric[5]=0 # α_G
 
-            changeestimpara[5]=-(estimpara0[5])-estimpara0[5] # α_G
+            changeestimpara[5]=-(estimpara0[5]) # α_G
         end
 
-    elseif model==4.5
+    elseif model=="4.5"
 
         regime="F"
         subsorcompl=1
 
-        # α_G>0, AD=1
+        # μ=0, α_G>0, AD=1
 
+        estimpararestric[4]=0 # μ
         calibpararestric[1]=0 # AD
 
+        changeestimpara[4]=0.0 # μ
         changecalibpara[1]=1.0 # AD
 
         if estimpara0[5]<0
             estimpararestric[5]=0 # α_G
 
-            changeestimpara[5]=abs(estimpara0[5])-estimpara0[5] # α_G
+            changeestimpara[5]=abs(estimpara0[5]) # α_G
         end
 
-    elseif model==4.6
+    elseif model=="4.6"
 
         regime="F"
         subsorcompl=1
 
-        # α_G>0
+        # μ=0, α_G>0
+
+        estimpararestric[4]=0 # μ
+
+        changeestimpara[4]=0.0 # μ
 
         if estimpara0[5]<0
             estimpararestric[5]=0 # α_G
 
-            changeestimpara[5]=abs(estimpara0[5])-estimpara0[5] # α_G
+            changeestimpara[5]=abs(estimpara0[5]) # α_G
         end
 
-    elseif model==4.7
+    elseif model=="4.7"
 
         regime="F"
         subsorcompl=1
 
-        # α_G<0, AD=1
+        # μ=0, α_G<0, AD=1
 
+        estimpararestric[4]=0 # μ
         calibpararestric[1]=0 # AD
 
+        changeestimpara[4]=0.0 # μ
         changecalibpara[1]=1.0 # AD
 
         if estimpara0[5]>0
             estimpararestric[5]=0 # α_G
 
-            changeestimpara[5]=-(estimpara0[5])-estimpara0[5] # α_G
+            changeestimpara[5]=-(estimpara0[5]) # α_G
         end
 
-    elseif model==4.8
+    elseif model=="4.8"
 
         regime="F"
         subsorcompl=1
 
-        # α_G<0
+        # μ=0, α_G<0
+
+        estimpararestric[4]=0 # μ
+
+        changeestimpara[4]=0.0 # μ
 
         if estimpara0[5]>0
             estimpararestric[5]=0 # α_G
 
-            changeestimpara[5]=-(estimpara0[5])-estimpara0[5] # α_G
+            changeestimpara[5]=-(estimpara0[5]) # α_G
         end
 
-    elseif model==4.9
+    elseif model=="4.9"
 
         regime="F"
         subsorcompl=1
 
-        # α_G<0, AD=1, γ_KM=γ_LM=ρ_K=ρ_L=0
+        # μ=0, α_G<0, AD=1, γ_KF=γ_LF=ρ_K=ρ_L=0
 
+        estimpararestric[4]=0 # μ
         calibpararestric[1]=0 # AD
-        estimpararestric[17]=0
-        estimpararestric[18]=0
-        estimpararestric[25]=0
-        estimpararestric[26]=0
+        estimpararestric[21]=0 # γ_KF
+        estimpararestric[22]=0 # γ_LF
+        estimpararestric[25]=0 # ρ_K
+        estimpararestric[26]=0 # ρ_L
 
+        changeestimpara[4]=0.0 # μ
         changecalibpara[1]=1.0 # AD
-        changeestimpara[17]=0.0
-        changeestimpara[18]=0.0
-        changeestimpara[25]=0.0
-        changeestimpara[26]=0.0
+        changeestimpara[21]=0.0 # γ_KF
+        changeestimpara[22]=0.0 # γ_LF
+        changeestimpara[25]=0.0 # ρ_K
+        changeestimpara[26]=0.0 # ρ_L
 
 
         if estimpara0[5]>0
             estimpararestric[5]=0 # α_G
 
-            changeestimpara[5]=-(estimpara0[5])-estimpara0[5] # α_G
+            changeestimpara[5]=-(estimpara0[5]) # α_G
         end
 
-    elseif model==4.10
+    elseif model=="4.10"
 
         regime="F"
         subsorcompl=1
 
-        # α_G<0, γ_KM=γ_LM=ρ_K=ρ_L=0
+        # μ=0, α_G<0, γ_KF=γ_LF=ρ_K=ρ_L=0
 
-        estimpararestric[17]=0
-        estimpararestric[18]=0
-        estimpararestric[25]=0
-        estimpararestric[26]=0
+        estimpararestric[4]=0 # μ
+        estimpararestric[21]=0 # γ_KF
+        estimpararestric[22]=0 # γ_LF
+        estimpararestric[25]=0 # ρ_K
+        estimpararestric[26]=0 # ρ_L
 
-        changeestimpara[17]=0.0
-        changeestimpara[18]=0.0
-        changeestimpara[25]=0.0
-        changeestimpara[26]=0.0
+        changeestimpara[4]=0.0 # μ
+        changeestimpara[21]=0.0 # γ_KF
+        changeestimpara[22]=0.0 # γ_LF
+        changeestimpara[25]=0.0 # ρ_K
+        changeestimpara[26]=0.0 # ρ_L
 
 
         if estimpara0[5]>0
             estimpararestric[5]=0 # α_G
 
-            changeestimpara[5]=-(estimpara0[5])-estimpara0[5] # α_G
+            changeestimpara[5]=-(estimpara0[5]) # α_G
         end
 
-    elseif model==4.11 # To do, needs to shutdown steady state taxes too
+    elseif model=="4.11"
 
         regime="F"
         subsorcompl=1
 
-        # α_G<0, AD=1, γ_KM=γ_LM=ρ_K=ρ_L=0
+        # μ=0, α_G<0, AD=1, γ_KF=γ_LF=ρ_K=ρ_L=0, τK=τL=τC=0 (steady state values)
 
+        estimpararestric[4]=0 # μ
         calibpararestric[1]=0 # AD
-        estimpararestric[17]=0
-        estimpararestric[18]=0
-        estimpararestric[25]=0
-        estimpararestric[26]=0
+        estimpararestric[21]=0 # γ_KF
+        estimpararestric[22]=0 # γ_LF
+        estimpararestric[25]=0 # ρ_K
+        estimpararestric[26]=0 # ρ_L
+        calibpararestric[10]=0 # τK
+        calibpararestric[11]=0 # τL
+        calibpararestric[12]=0 # τC
 
+        changeestimpara[4]=0.0 # μ
         changecalibpara[1]=1.0 # AD
-        changeestimpara[17]=0.0
-        changeestimpara[18]=0.0
-        changeestimpara[25]=0.0
-        changeestimpara[26]=0.0
-
+        changeestimpara[21]=0.0 # γ_KF
+        changeestimpara[22]=0.0 # γ_LF
+        changeestimpara[25]=0.0 # ρ_K
+        changeestimpara[26]=0.0 # ρ_L
+        changecalibpara[10]=0.0 # τK
+        changecalibpara[11]=0.0 # τL
+        changecalibpara[12]=0.0 # τC
 
         if estimpara0[5]>0
             estimpararestric[5]=0 # α_G
 
-            changeestimpara[5]=-(estimpara0[5])-estimpara0[5] # α_G
+            changeestimpara[5]=-(estimpara0[5]) # α_G
         end
 
-    elseif model==4.12 # To do, needs to shutdown steady state taxes too
+    elseif model=="4.12"
 
         regime="F"
         subsorcompl=1
 
-        # α_G<0, γ_KM=γ_LM=ρ_K=ρ_L=0
+        # μ=0, α_G<0, γ_KF=γ_LF=ρ_K=ρ_L=0, τK=τL=τC=0 (steady state values)
 
-        estimpararestric[17]=0
-        estimpararestric[18]=0
-        estimpararestric[25]=0
-        estimpararestric[26]=0
+        estimpararestric[4]=0 # μ
+        estimpararestric[21]=0 # γ_KF
+        estimpararestric[22]=0 # γ_LF
+        estimpararestric[25]=0 # ρ_K
+        estimpararestric[26]=0 # ρ_L
+        calibpararestric[10]=0 # τK
+        calibpararestric[11]=0 # τL
+        calibpararestric[12]=0 # τC
 
-        changeestimpara[17]=0.0
-        changeestimpara[18]=0.0
-        changeestimpara[25]=0.0
-        changeestimpara[26]=0.0
+        changeestimpara[4]=0.0 # μ
+        changeestimpara[21]=0.0 # γ_KF
+        changeestimpara[22]=0.0 # γ_LF
+        changeestimpara[25]=0.0 # ρ_K
+        changeestimpara[26]=0.0 # ρ_L
+        changecalibpara[10]=0.0 # τK
+        changecalibpara[11]=0.0 # τL
+        changecalibpara[12]=0.0 # τC
 
 
         if estimpara0[5]>0
             estimpararestric[5]=0 # α_G
 
-            changeestimpara[5]=-(estimpara0[5])-estimpara0[5] # α_G
+            changeestimpara[5]=-(estimpara0[5]) # α_G
         end
+
+    elseif model=="5.1"
+
+        regime="M"
+
+        # μ=0, γ_KM=γ_LM=ρ_K=ρ_L=0
+
+        estimpararestric[4]=0 # μ
+        estimpararestric[17]=0 # γ_KM
+        estimpararestric[18]=0 # γ_LM
+        estimpararestric[25]=0 # ρ_K
+        estimpararestric[26]=0 # ρ_L
+
+        changeestimpara[4]=0.0 # μ
+        changeestimpara[17]=0.0 # γ_KM
+        changeestimpara[18]=0.0 # γ_LM
+        changeestimpara[25]=0.0 # ρ_K
+        changeestimpara[26]=0.0 # ρ_L
+
+    elseif model=="5.2"
+
+        regime="F"
+
+        # μ=0, γ_KF=γ_LF=ρ_K=ρ_L=0
+
+        estimpararestric[4]=0 # μ
+        estimpararestric[21]=0 # γ_KF
+        estimpararestric[22]=0 # γ_LF
+        estimpararestric[25]=0 # ρ_K
+        estimpararestric[26]=0 # ρ_L
+
+        changeestimpara[4]=0.0 # μ
+        changeestimpara[21]=0.0 # γ_KF
+        changeestimpara[22]=0.0 # γ_LF
+        changeestimpara[25]=0.0 # ρ_K
+        changeestimpara[26]=0.0 # ρ_L
+
     end
-
 
 
     calibpara=calibpara0.*calibpararestric+changecalibpara
