@@ -39,7 +39,7 @@ num_estimpara=43
 Σ0=Diagonal([0.05/100,0.5,0.2,0.1,1.01,0.15,1.5,0.2,0.2,0.2,0.2, # χ_w
         0.2,0.15,0.05,0.2,0.1,0.1,0.1,0.1,0.001,0.001,0.001,0.001,# γ_ZF
         0.2,0.2,0.2,0.2, 0.2,0.2,0.2,0.2,0.2, 0.15,0.15,0.15, # ρ_ez
-        1/100,1/100,1/100,1/100, 1/100,1/100,1/100,1/100])
+        1/100,1/100,1/100,1/100, 1/100,1/100,1/100,1/100].^2)
 
 ## Function for Metropolis-Hastings Algorithm
 
@@ -92,9 +92,8 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata   )
                 # println([prod(cand_density), prod(cand_draw[end-7:end])])
 
                 if prod(cand_density) < 1e-15
-                          priorcount  = priorcount + 1  # global
-                        postcand   = - 1e5
-                          lastdraw    = lastdraw        # global
+                          priorcount  = priorcount + 1  # number of rejection
+                          lastdraw    = lastdraw        # keep the last draw
 
                 else # density of the draw is not zero
                         " Solve the model + Evaluate the Likelihood"
@@ -114,19 +113,18 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata   )
 
                        " Accept if likelihood is high enough"
                        if min( exp(postcand - postlast),1) > rand()
-                                 acceptcount = acceptcount + 1 # global
-                                 lastdraw    = cand_draw       # global
-                                 postlast    = postcand
+                                 acceptcount = acceptcount + 1 # nember of acceptance
+                                 lastdraw    = cand_draw       # replace with the new draw
+                                 postlast    = postcand        # likelihood of the new draw
                        else
-                                 priorcount  = priorcount + 1  # global
-                                 lastdraw    = lastdraw        # global
+                                 priorcount  = priorcount + 1  # number of rejection
+                                 lastdraw    = lastdraw        # keep the current draw
                        end
 
                 end
 
                 para_drawn[ii] =  lastdraw
                 println("Accept:", acceptcount,", Reject:", priorcount  )
-                # global regime, subsorcompl, calibpara0
 
         end
         return para_drawn, acceptcount, priorcount
@@ -135,10 +133,10 @@ end
 ## Implement
 simlen = 20  ;model  = 4.2
 initialdraw = mean([DrawParaFromPrior() for i=1:100])
-cc       = 0.18 # tuned to have acceptance rate 0.2-0.4
+cc       = 0.1 # tuned to have acceptance rate 0.2-0.4
 
 
-para_drawn, acceptcount, priorcount  = myMH(model, simlen, cc, initialdraw, vSD,  obsdata ) ;
+para_drawn, acceptcount, priorcount  = myMH(model, simlen, cc, initialdraw, Σ0,  obsdata ) ;
 
 # Summarize the Results
 println("Accept:", acceptcount,", Reject:", priorcount  )
