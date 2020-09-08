@@ -429,19 +429,24 @@ function modelrestrictions(model,calibpara0,estimpara0)
 
         regime="M"
 
-        # μ=0, γ_KM=γ_LM=ρ_K=ρ_L=0
+        # μ=0, γ_KM=γ_LM=ρ_K=ρ_L=0, ρ_Z=0.98, ρ_ez=0.8
 
         estimpararestric[4]=0 # μ
         estimpararestric[17]=0 # γ_KM
         estimpararestric[18]=0 # γ_LM
         estimpararestric[25]=0 # ρ_K
         estimpararestric[26]=0 # ρ_L
+        estimpararestric[27]=0 # ρ_Z
+        estimpararestric[35]=0 # ρ_ez
+
 
         changeestimpara[4]=0.0 # μ
         changeestimpara[17]=0.0 # γ_KM
         changeestimpara[18]=0.0 # γ_LM
         changeestimpara[25]=0.0 # ρ_K
         changeestimpara[26]=0.0 # ρ_L
+        changeestimpara[27]=0.98 # ρ_Z
+        changeestimpara[35]=0.8 # ρ_ez
 
     elseif model=="5.2"
 

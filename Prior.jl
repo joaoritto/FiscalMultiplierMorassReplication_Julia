@@ -264,13 +264,15 @@ paraPdf =
  return paraPdf
 end
 
-pdf1 = ParaDensity(priorpara )
-prod(pdf1)
+## DELETE THIS?
+
+#pdf1 = ParaDensity(priorpara )
+#prod(pdf1)
 
 # Check when some density is zero
-priorpara[5] = 2
-pdf1 = ParaDensity(priorpara )
-prod(pdf1)
+#priorpara[5] = 2
+#pdf1 = ParaDensity(priorpara )
+#prod(pdf1)
 
 " ## Test if it works properly
 Ntry        = 100

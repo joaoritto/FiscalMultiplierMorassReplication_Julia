@@ -1,6 +1,9 @@
 ## Preparation for Metropolis-Hastings Algorithm
 # Please have "data.mat" (from Leeper's replication folder) in the current directory
 
+# IMPORTANT: TWO MORE PARAMETERS TO BE ADDED (Pibar and Lbar)
+
+
 ## Load Data
 function get_data(d1d,d2d,USdata) # correspond to "get_data" in Leeper
         # Find the row of d1d and d2d
@@ -47,7 +50,7 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata   )
         ## Take the "estimpararestric, regime, subsorcompl"
         # Specify the Model
         current_model = model
-        # Apply the function "modelrestrictions"
+        # Apply the function "modelrestrictions" DELETE THIS?
         calibpara0=calibratedpara();
         estimpara00=DrawParaFromPrior()
         calibpara,estimpara,calibpararestric,estimpararestric,regime,subsorcompl =
@@ -56,6 +59,10 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata   )
 
         ## Array to Store the Parameters drawn
         para_drawn = [zeros(size(Σ,1)) for i = 1:simlen]
+        ## Array to Store multipliers
+        y_multiplier = [zeros(41) for i=1:simlen]
+        c_multiplier = [zeros(41) for i=1:simlen]
+        i_multiplier = [zeros(41) for i=1:simlen]
 
         priorcount = 0; acceptcount = 0; postlast = -1e12;
 
@@ -86,8 +93,6 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata   )
                                                estimpararestric, regime, subsorcompl)
                 end
 
-                # If we want, we could keep drawing until cand_density_positive == true
-                # with "while" loop. But Leeper et al. didn't do so.
                 # cand_density_positive = prod(cand_density) > 1e-15
                 # println([prod(cand_density), prod(cand_draw[end-7:end])])
 
@@ -125,18 +130,19 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata   )
 
                 para_drawn[ii] =  lastdraw
                 println("Accept:", acceptcount,", Reject:", priorcount  )
+                y_multiplier[ii],c_multiplier[ii],i_multiplier[ii]=PVmultiplier(calibpara,estimpara,T,R,Q,Z,H,W,path)
 
         end
-        return para_drawn, acceptcount, priorcount
+        return para_drawn, acceptcount, priorcount, y_multiplier, c_multiplier, i_multiplier
 end
 
 ## Implement
-simlen = 20  ;model  = 4.2
+simlen = 20  ;model  = 5.1
 initialdraw = mean([DrawParaFromPrior() for i=1:100])
 cc       = 0.1 # tuned to have acceptance rate 0.2-0.4
 
 
-para_drawn, acceptcount, priorcount  = myMH(model, simlen, cc, initialdraw, Σ0,  obsdata ) ;
+para_drawn, acceptcount, priorcount, y_multiplier, c_multiplier, i_multiplier  = myMH(model, simlen, cc, initialdraw, Σ0,  obsdata ) ;
 
 # Summarize the Results
 println("Accept:", acceptcount,", Reject:", priorcount  )
