@@ -298,6 +298,14 @@ function linearizedmodel(calibpara,estimpara,regime,path)
     σ_em=estimpara[41]
     σ_eg=estimpara[42]
     σ_ez=estimpara[43]
+    
+    if length(estimpara)>43
+        Lbar=estimpara[44]
+        Πbar=estimpara[45]
+    else
+        Lbar=0
+        Πbar=0
+    end
 
     SS=steadystate(calibpara,estimpara)
 
@@ -900,7 +908,7 @@ end
 # Transition equation: α_t=T α_{t-1} + R η_t,    η_t is N(0,Q)
 # Measurement equation: y_t=Z α_t + W + ζ_t   ζ_t is N(0,H)
 
-function statespacematrices(G1,C,impact,estimpara,path)
+function statespacematrices(G1,C,impact,calibpara,estimpara,path)
 
     include(path*"variablesindices.jl")
 
@@ -925,6 +933,9 @@ function statespacematrices(G1,C,impact,estimpara,path)
     Z[8,Robs_var]=1
 
     γ=estimpara[1]
+    β=calibpara[2]
+    
+    RRbar=exp(γ)/β
 
     W=zeros(num_obsvariables)
     W[1]=γ*100
@@ -932,9 +943,9 @@ function statespacematrices(G1,C,impact,estimpara,path)
     W[3]=γ*100
     W[4]=γ*100
     W[5]=γ*100
-    #W[6]=Lbar
-    #W[7]=π_ss
-    #W[8]=π_ss+Rbar
+    W[6]=Lbar
+    W[7]=Πbar
+    W[8]=Πbar+RRbar
 
     # Need to define what the steady state values in these last constants should equal to
 
