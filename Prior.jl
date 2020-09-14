@@ -249,6 +249,7 @@ s_pdf   = pdf(Normal(6,1.5),paraValues[7]) # Investment adjustment cost
 σ_em_pdf  = myInvΓPdf(0.1,1,100*paraValues[41]) # Standard deviation, monetary policy shock
 σ_eg_pdf  = myInvΓPdf(0.1,1,100*paraValues[42]) # Standard deviation, government consumption shock
 σ_ez_pdf  = myInvΓPdf(0.1,1,100*paraValues[43]) # Standard deviation, transfers shock
+   
 
 ## Create an array (vector) of parameters
 paraPdf =
@@ -259,6 +260,12 @@ paraPdf =
   push!(paraPdf,ρ_G_pdf,ρ_K_pdf,ρ_L_pdf,ρ_Z_pdf,ρ_a_pdf,ρ_b_pdf,ρ_i_pdf,ρ_p_pdf,ρ_w_pdf,ρ_em_pdf,ρ_eg_pdf,ρ_ez_pdf)
 paraPdf =
   push!(paraPdf,σ_a_pdf,σ_b_pdf,σ_i_pdf,σ_p_pdf,σ_w_pdf,σ_em_pdf,σ_eg_pdf,σ_ez_pdf)
+   
+   if length(paraValues)>43
+      Lbar_pdf=pdf(Normal(468,5),paravalues[44])
+      Πbar_pdf=pdf(Normal(0.75,0.25),paravalues[45])
+      paraPdf=push!(paraPdf,Lbar_pdf,Πbar_pdf)
+   end
 
 # num_parameters = length(paraPdf)
  return paraPdf
