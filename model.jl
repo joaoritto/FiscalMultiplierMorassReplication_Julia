@@ -396,11 +396,11 @@ function linearizedmodel(calibpara,estimpara,regime,path)
     num_shocks=8
     num_experr=9
 
-    Γ_0=zeros(num_eq,num_var)
-    Γ_1=zeros(num_eq,num_var)
-    constant=zeros(num_eq)
-    Ψ=zeros(num_eq,num_shocks)
-    Π=zeros(num_eq,num_experr)
+    Γ_0=spzeros(num_eq,num_var)
+    Γ_1=spzeros(num_eq,num_var)
+    constant=spzeros(num_eq)
+    Ψ=spzeros(num_eq,num_shocks)
+    Π=spzeros(num_eq,num_experr)
 
     # 1. Production function
     Γ_0[productionfunction_eq,y_var]=1
