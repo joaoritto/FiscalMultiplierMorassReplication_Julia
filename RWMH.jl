@@ -36,13 +36,13 @@ d2d      = 2007.4;        # last quarter in estimation
 obsdata = get_data(d1d,d2d,USdata)
 
 ## Create a vector of standard deviations from Prior Distributions
-num_estimpara=43
+num_estimpara=45
 
 
 Σ0=Diagonal([0.05/100,0.5,0.2,0.1,1.01,0.15,1.5,0.2,0.2,0.2,0.2, # χ_w
         0.2,0.15,0.05,0.2,0.1,0.1,0.1,0.1,0.001,0.001,0.001,0.001,# γ_ZF
         0.2,0.2,0.2,0.2, 0.2,0.2,0.2,0.2,0.2, 0.15,0.15,0.15, # ρ_ez
-        1/100,1/100,1/100,1/100, 1/100,1/100,1/100,1/100].^2)
+        1/100,1/100,1/100,1/100, 1/100,1/100,1/100,1/100,5,0.25].^2)
 
 ## Function for Metropolis-Hastings Algorithm
 
@@ -50,7 +50,7 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata   )
         ## Take the "estimpararestric, regime, subsorcompl"
         # Specify the Model
         current_model = model
-        # Apply the function "modelrestrictions" DELETE THIS?
+        # Apply the function "modelrestrictions" 
         calibpara0=calibratedpara();
         estimpara00=DrawParaFromPrior()
         calibpara,estimpara,calibpararestric,estimpararestric,regime,subsorcompl =
