@@ -15,7 +15,11 @@ function PriorPredictiveAnalysis(model,N,path)
 
         calibpara,estimpara,calibparar,estimparar,regime,subsorcompl=modelrestrictions(model,calibpara0,estimpara0)
 
-        Γ_0, Γ_1, constant, Ψ, Π = linearizedmodel(calibpara,estimpara,regime,path)
+        Γ_0s, Γ_1s, constants, Ψs, Πs = linearizedmodel(calibpara,estimpara,regime,path)
+        
+        # Recover the dense matrix
+        Γ_0 = Matrix(Γ_0s); Γ_1 = Matrix(Γ_1s);
+        constant = Vector(constants); Ψ = Matrix(Ψs); Π = Matrix(Πs)
 
         G1, C, impact, qt, a, b, z, eu=mygensys(Γ_0,Γ_1,constant,Ψ,Π)
 
