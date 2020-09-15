@@ -29,18 +29,18 @@ function transform_F(Leeper_mode) # 35 elements
     ω_w=Leeper_mode[3]
     χ_p=Leeper_mode[8]
     χ_w=Leeper_mode[7]
-    ϕ_πM=Leeper_mode[9]
-    ϕ_πF=1
+    ϕ_πM=1
+    ϕ_πF=Leeper_mode[9]
     ϕ_y=Leeper_mode[10]
     ρ_r=Leeper_mode[15]
-    γ_GM=Leeper_mode[11]
+    γ_GM=1
     γ_KM=1
     γ_LM=1
-    γ_ZM=Leeper_mode[12]
-    γ_GF=1
+    γ_ZM=1
+    γ_GF=Leeper_mode[11]
     γ_KF=1
     γ_LF=1
-    γ_ZF=1
+    γ_ZF=Leeper_mode[12]
     ρ_G=Leeper_mode[19]
     ρ_K=1
     ρ_L=1
@@ -61,7 +61,7 @@ function transform_F(Leeper_mode) # 35 elements
     σ_em=Leeper_mode[23]
     σ_eg=Leeper_mode[27]
     σ_ez=Leeper_mode[28]
-    
+
     Mode_trans = [γ,ξ,θ,μ,α_G,ψ,s,ω_p,ω_w,
         χ_p,χ_w,ϕ_πM,ϕ_πF,ϕ_y,ρ_r,
         γ_GM,γ_KM,γ_LM,γ_ZM,γ_GF,γ_KF,γ_LF,γ_ZF,
