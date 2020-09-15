@@ -1,8 +1,6 @@
 ## Preparation for Metropolis-Hastings Algorithm
 # Please have "data.mat" (from Leeper's replication folder) in the current directory
 
-# IMPORTANT: TWO MORE PARAMETERS TO BE ADDED (Pibar and Lbar)
-
 
 ## Load Data
 function get_data(d1d,d2d,USdata) # correspond to "get_data" in Leeper
