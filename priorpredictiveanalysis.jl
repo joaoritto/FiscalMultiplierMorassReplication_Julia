@@ -23,7 +23,7 @@ function PriorPredictiveAnalysis(model,N,path)
 
         G1, C, impact, qt, a, b, z, eu=mygensys(Γ_0,Γ_1,constant,Ψ,Π)
 
-        T, R, Q, Z, H, W=statespacematrices(G1,C,impact,estimpara,path)
+        T, R, Q, Z, H, W=statespacematrices(G1,C,impact,calibpara,estimpara,path)
 
         outputmultiplier[i],consumptionmultiplier[i],investmentmultiplier[i]=PVmultiplier(calibpara,estimpara,path,T,R,Q,Z,H,W)
     end
