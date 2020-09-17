@@ -17,6 +17,6 @@ Table_y,Table_c,Table_i=table3(N,path)
 
 cd(path) # go to the current directory
 
-save("file/PriorPredictiveN20000_model3.jld","OutMul",
+save("file/PriorPredictiveN20000_model4.jld","OutMul",
 Table_y, "ConsMul", Table_c,
 "InvMul",Table_i) # save in the folder (I created a folder "file")
