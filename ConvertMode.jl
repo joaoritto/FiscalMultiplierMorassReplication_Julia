@@ -106,7 +106,7 @@ function transform_M(Leeper_mode) # 35 elements
     ρ_w=Leeper_mode[17]
     ρ_em=Leeper_mode[30]
     ρ_eg=Leeper_mode[31]
-    ρ_ez=Leeper_mode[32]
+    ρ_ez=1
     σ_a=Leeper_mode[20]
     σ_b=Leeper_mode[21]
     σ_i=Leeper_mode[23]
