@@ -40,7 +40,7 @@ function table3(N,path)
     Table_c=zeros(length(Models),5)
     Table_i=zeros(length(Models),5)
 
-    for ind in 1:18
+    for ind in 1:length(Models)
         model=Models[ind]
         outputmultiplier,consumptionmultiplier,investmentmultiplier=PriorPredictiveAnalysis(model,N,path)
 
