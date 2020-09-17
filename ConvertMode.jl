@@ -62,11 +62,14 @@ function transform_F(Leeper_mode) # 35 elements
     σ_eg=Leeper_mode[27]
     σ_ez=Leeper_mode[28]
 
+    L_bar  = Leeper_mode[34]
+    pi_bar = Leeper_mode[35]
+    
     Mode_trans = [γ,ξ,θ,μ,α_G,ψ,s,ω_p,ω_w,
         χ_p,χ_w,ϕ_πM,ϕ_πF,ϕ_y,ρ_r,
         γ_GM,γ_KM,γ_LM,γ_ZM,γ_GF,γ_KF,γ_LF,γ_ZF,
         ρ_G,ρ_K,ρ_L,ρ_Z,ρ_a,ρ_b,ρ_i,ρ_p,ρ_w,ρ_em,ρ_eg,ρ_ez ,
-        σ_a,σ_b,σ_i,σ_p,σ_w,σ_em,σ_eg,σ_ez]
+        σ_a,σ_b,σ_i,σ_p,σ_w,σ_em,σ_eg,σ_ez, L_bar, pi_bar]
 
     return Mode_trans
 end
@@ -115,12 +118,15 @@ function transform_M(Leeper_mode) # 35 elements
     σ_em=Leeper_mode[22]
     σ_eg=Leeper_mode[26]
     σ_ez=Leeper_mode[27]
+    
+    L_bar  = Leeper_mode[32]
+    pi_bar = Leeper_mode[33]
 
     Mode_trans = [γ,ξ,θ,μ,α_G,ψ,s,ω_p,ω_w,
         χ_p,χ_w,ϕ_πM,ϕ_πF,ϕ_y,ρ_r,
         γ_GM,γ_KM,γ_LM,γ_ZM,γ_GF,γ_KF,γ_LF,γ_ZF,
         ρ_G,ρ_K,ρ_L,ρ_Z,ρ_a,ρ_b,ρ_i,ρ_p,ρ_w,ρ_em,ρ_eg,ρ_ez ,
-        σ_a,σ_b,σ_i,σ_p,σ_w,σ_em,σ_eg,σ_ez]
+        σ_a,σ_b,σ_i,σ_p,σ_w,σ_em,σ_eg,σ_ez, L_bar, pi_bar]
 
     return Mode_trans
 
