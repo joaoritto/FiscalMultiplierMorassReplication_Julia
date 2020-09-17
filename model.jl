@@ -298,7 +298,7 @@ function linearizedmodel(calibpara,estimpara,regime,path)
     σ_em=estimpara[41]
     σ_eg=estimpara[42]
     σ_ez=estimpara[43]
-    
+
     if length(estimpara)>43
         Lbar=estimpara[44]
         Πbar=estimpara[45]
@@ -934,7 +934,14 @@ function statespacematrices(G1,C,impact,calibpara,estimpara,path)
 
     γ=estimpara[1]
     β=calibpara[2]
-    
+
+    if length(estimpara)>43
+        Lbar=estimpara[44]
+        Πbar=estimpara[45]
+    else
+        Lbar=0
+        Πbar=0
+    end  
     RRbar=exp(γ)/β
 
     W=zeros(num_obsvariables)
