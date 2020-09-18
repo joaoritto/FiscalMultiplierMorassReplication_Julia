@@ -249,7 +249,7 @@ s_pdf   = pdf(Normal(6,1.5),paraValues[7]) # Investment adjustment cost
 σ_em_pdf  = myInvΓPdf(0.1,1,100*paraValues[41]) # Standard deviation, monetary policy shock
 σ_eg_pdf  = myInvΓPdf(0.1,1,100*paraValues[42]) # Standard deviation, government consumption shock
 σ_ez_pdf  = myInvΓPdf(0.1,1,100*paraValues[43]) # Standard deviation, transfers shock
-   
+
 
 ## Create an array (vector) of parameters
 paraPdf =
@@ -260,10 +260,10 @@ paraPdf =
   push!(paraPdf,ρ_G_pdf,ρ_K_pdf,ρ_L_pdf,ρ_Z_pdf,ρ_a_pdf,ρ_b_pdf,ρ_i_pdf,ρ_p_pdf,ρ_w_pdf,ρ_em_pdf,ρ_eg_pdf,ρ_ez_pdf)
 paraPdf =
   push!(paraPdf,σ_a_pdf,σ_b_pdf,σ_i_pdf,σ_p_pdf,σ_w_pdf,σ_em_pdf,σ_eg_pdf,σ_ez_pdf)
-   
+
    if length(paraValues)>43
-      Lbar_pdf=pdf(Normal(468,5),paravalues[44])
-      Πbar_pdf=pdf(Normal(0.75,0.25),paravalues[45])
+      Lbar_pdf=pdf(Normal(468,5),paraValues[44])
+      Πbar_pdf=pdf(Normal(0.75,0.25),paraValues[45])
       paraPdf=push!(paraPdf,Lbar_pdf,Πbar_pdf)
    end
 
@@ -325,11 +325,11 @@ function JointDensities(vDensities, estimpararestric,regime, subsorcompl)
 vDensities2 = vDensities.* estimpararestric + (1 .- estimpararestric)
 
 if regime == "M"
-   regimeM01 = ones(Int64,43)
+   regimeM01 = ones(Int64,length(vDensities))
    regimeM01[[13,20,21,22,23]] = zeros(Int64,5) # create a vector similar to estimpararestric
    vDensities3 = vDensities.* regimeM01 + (1 .- regimeM01)
 else # regime "F"
-   regimeF01 = ones(Int64,43)
+   regimeF01 = ones(Int64,length(vDensities))
    regimeF01[[12,16,17,18,19]] = zeros(Int64,5)
    vDensities3 = vDensities.* regimeF01 + (1 .- regimeF01)
 end

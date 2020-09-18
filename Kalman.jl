@@ -14,10 +14,9 @@
 # Input: T,R,Q,Z,H,W,data
 # Output: Smth_a, Smth_P
 
-current_repository = "/Users/yoshiki/Dropbox/Morass/MyJuliaCode"
+#current_repository = "/Users/yoshiki/Dropbox/Morass/MyJuliaCode"
 # I will use the csv file from Homework 2 of 706 "gdpplus.csv"
 
-using Statistics, LinearAlgebra
 
 ## Define the Function to run Kalman Filter
 function myKalmanFilter(T,R,Q,Z,H,W,data)
@@ -67,7 +66,7 @@ for tt = 2:TT
 
     vt[tt]     = y[tt,:] - Z * Pred_a[tt] - W
     Ft[tt]     = Z * Pred_P[tt] * Z' + H
-    if abs(det(Ft[tt])) <= 0 
+    if abs(det(Ft[tt])) <= 0
         return "error (Ft is singular)"
     end
 
@@ -153,8 +152,8 @@ end
 
 ## Check if it works properly
 # Download the csv.data used in Homework 2 of 706
-cd(current_repository)
-println(pwd())
+#cd(current_repository)
+#println(pwd())
 # using CSV
 # rawData = CSV.read("gdpplus.csv")
 # data_TS = rawData[41:236,[1,5,6]]

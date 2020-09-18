@@ -2,23 +2,23 @@
 ## suitable for our vector/matrix
 
 # September 15th
-path="/Users/yoshiki/Dropbox/Morass/MyJuliaCode/0904/"
-using MAT, JLD
-cd(path)
+#path="/Users/yoshiki/Dropbox/Morass/MyJuliaCode/0904/"
+#using MAT, JLD
+#cd(path)
 
 # Leeper's Mode and Var-Cov
-file1  = read(matopen("SaveModeHessian.mat")) # load data
-Leeper_mode = file1["mode"]
-Leeper_Cov  = file1["inverseHessianmode"]
+#file1  = read(matopen("SaveModeHessian.mat")) # load data
+#Leeper_mode = file1["mode"]
+#Leeper_Cov  = file1["inverseHessianmode"]
 
 # My Mode and Cov Matrix
-file2 = load("DrawsN10000_model_43.jld") # you can load this data
-my_mode = file2["Mean"]
-my_Cov  = file2["CovMatrix"]
+#file2 = load("DrawsN10000_model_43.jld") # you can load this data
+#my_mode = file2["Mean"]
+#my_Cov  = file2["CovMatrix"]
 
 
 function transform_F(Leeper_mode) # 35 elements
-    γ=Leeper_mode[1]
+    γ=Leeper_mode[1]/100
     ξ=Leeper_mode[2]
     θ=Leeper_mode[29]
     μ=1
@@ -53,18 +53,18 @@ function transform_F(Leeper_mode) # 35 elements
     ρ_em=Leeper_mode[31]
     ρ_eg=Leeper_mode[32]
     ρ_ez=Leeper_mode[33]
-    σ_a=Leeper_mode[21]
-    σ_b=Leeper_mode[22]
-    σ_i=Leeper_mode[24]
-    σ_p=Leeper_mode[26]
-    σ_w=Leeper_mode[25]
-    σ_em=Leeper_mode[23]
-    σ_eg=Leeper_mode[27]
-    σ_ez=Leeper_mode[28]
+    σ_a=Leeper_mode[21]/100
+    σ_b=Leeper_mode[22]/100
+    σ_i=Leeper_mode[24]/100
+    σ_p=Leeper_mode[26]/100
+    σ_w=Leeper_mode[25]/100
+    σ_em=Leeper_mode[23]/100
+    σ_eg=Leeper_mode[27]/100
+    σ_ez=Leeper_mode[28]/100
 
     L_bar  = Leeper_mode[34]
     pi_bar = Leeper_mode[35]
-    
+
     Mode_trans = [γ,ξ,θ,μ,α_G,ψ,s,ω_p,ω_w,
         χ_p,χ_w,ϕ_πM,ϕ_πF,ϕ_y,ρ_r,
         γ_GM,γ_KM,γ_LM,γ_ZM,γ_GF,γ_KF,γ_LF,γ_ZF,
@@ -75,7 +75,7 @@ function transform_F(Leeper_mode) # 35 elements
 end
 
 function transform_M(Leeper_mode) # 35 elements
-    γ=Leeper_mode[1]
+    γ=Leeper_mode[1]/100
     ξ=Leeper_mode[2]
     θ=Leeper_mode[28]
     μ=1
@@ -110,15 +110,15 @@ function transform_M(Leeper_mode) # 35 elements
     ρ_em=Leeper_mode[30]
     ρ_eg=Leeper_mode[31]
     ρ_ez=1
-    σ_a=Leeper_mode[20]
-    σ_b=Leeper_mode[21]
-    σ_i=Leeper_mode[23]
-    σ_p=Leeper_mode[25]
-    σ_w=Leeper_mode[24]
-    σ_em=Leeper_mode[22]
-    σ_eg=Leeper_mode[26]
-    σ_ez=Leeper_mode[27]
-    
+    σ_a=Leeper_mode[20]/100
+    σ_b=Leeper_mode[21]/100
+    σ_i=Leeper_mode[23]/100
+    σ_p=Leeper_mode[25]/100
+    σ_w=Leeper_mode[24]/100
+    σ_em=Leeper_mode[22]/100
+    σ_eg=Leeper_mode[26]/100
+    σ_ez=Leeper_mode[27]/100
+
     L_bar  = Leeper_mode[32]
     pi_bar = Leeper_mode[33]
 
@@ -133,8 +133,8 @@ function transform_M(Leeper_mode) # 35 elements
 end
 
 
-Leeper_mode_2 = transform_M(Leeper_mode)
+#Leeper_mode_2 = transform_M(Leeper_mode)
 
 # Compare
-Mode_compare = [Leeper_mode_2, my_mode]
-println([Leeper_mode, my_mode])
+#Mode_compare = [Leeper_mode_2, my_mode]
+#println([Leeper_mode, my_mode])

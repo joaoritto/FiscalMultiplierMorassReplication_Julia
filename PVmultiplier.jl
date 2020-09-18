@@ -1,6 +1,6 @@
 # Computing the present value multiplier
 
-function PVmultiplier(calibpara,estimpara,path,T,R,Q,Z,H,W)
+function PVmultiplier(calibpara,estimpara,T,R,Q,Z,H,W,path)
 
     include(path*"variablesindices.jl")
     include(path*"model.jl")

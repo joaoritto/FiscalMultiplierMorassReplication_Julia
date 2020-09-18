@@ -24,33 +24,17 @@ function get_data(d1d,d2d,USdata) # correspond to "get_data" in Leeper
         return final_data
 end
 
-using MAT
-cd(path)
-file1  = read(matopen("data.mat")) # load data
-USdata = file1["data"]             # extract array from the loaded data
 
-d1d      = 1955.1;        # first quarter in estimation
-d2d      = 2007.4;        # last quarter in estimation
-obsdata = get_data(d1d,d2d,USdata)
-
-## Create a vector of standard deviations from Prior Distributions
-num_estimpara=45
-
-
-Σ0=Diagonal([0.05/100,0.5,0.2,0.1,1.01,0.15,1.5,0.2,0.2,0.2,0.2, # χ_w
-        0.2,0.15,0.05,0.2,0.1,0.1,0.1,0.1,0.001,0.001,0.001,0.001,# γ_ZF
-        0.2,0.2,0.2,0.2, 0.2,0.2,0.2,0.2,0.2, 0.15,0.15,0.15, # ρ_ez
-        1/100,1/100,1/100,1/100, 1/100,1/100,1/100,1/100,5,0.25].^2)
 
 ## Function for Metropolis-Hastings Algorithm
 
-function myMH(model, simlen, cc, initialdraw, Σ,  obsdata   )
+function myMH(model, simlen, cc, initialdraw, Σ,  obsdata ,path  )
         ## Take the "estimpararestric, regime, subsorcompl"
         # Specify the Model
         current_model = model
-        # Apply the function "modelrestrictions" 
+        # Apply the function "modelrestrictions"
         calibpara0=calibratedpara();
-        estimpara00=DrawParaFromPrior()
+        estimpara00=initialdraw
         calibpara,estimpara,calibpararestric,estimpararestric,regime,subsorcompl =
                      modelrestrictions(current_model,calibpara0,estimpara00)
         # global regime
@@ -98,13 +82,29 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata   )
                           priorcount  = priorcount + 1  # number of rejection
                           lastdraw    = lastdraw        # keep the last draw
 
+                          if ii>1
+                                  y_multiplier[ii],c_multiplier[ii],i_multiplier[ii]=y_multiplier[ii-1],c_multiplier[ii-1],i_multiplier[ii-1]
+                          else
+                                  Γ_0s, Γ_1s, constants, Ψs, Πs = linearizedmodel(calibpara,lastdraw,regime,path)
+
+                                  # Recover the dense matrix
+                                  Γ_0 = Matrix(Γ_0s); Γ_1 = Matrix(Γ_1s);
+                                  constant = Vector(constants); Ψ = Matrix(Ψs); Π = Matrix(Πs)
+
+                                  # Express in State-Space Form
+                                  G1, C, impact, qt, a, b, z, eu=mygensys(Γ_0,Γ_1,constant,Ψ,Π)
+                                  T, R, Q, Z, H, W=statespacematrices(G1,C,impact,calibpara,estimpara,path)
+                                  y_multiplier[ii],c_multiplier[ii],i_multiplier[ii]=PVmultiplier(calibpara,lastdraw,T,R,Q,Z,H,W,path)
+                          end
+
+
                 else # density of the draw is not zero
                         " Solve the model + Evaluate the Likelihood"
                         # Structural Model
                        calibpara,estimpara,calibparar,estimparar,regime,subsorcompl=
                                modelrestrictions(current_model,calibpara0,cand_draw)
                        Γ_0s, Γ_1s, constants, Ψs, Πs = linearizedmodel(calibpara,estimpara,regime,path)
-                        
+
                        # Recover the dense matrix
                        Γ_0 = Matrix(Γ_0s); Γ_1 = Matrix(Γ_1s);
                        constant = Vector(constants); Ψ = Matrix(Ψs); Π = Matrix(Πs)
@@ -123,29 +123,21 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata   )
                                  acceptcount = acceptcount + 1 # nember of acceptance
                                  lastdraw    = cand_draw       # replace with the new draw
                                  postlast    = postcand        # likelihood of the new draw
+                                 y_multiplier[ii],c_multiplier[ii],i_multiplier[ii]=PVmultiplier(calibpara,lastdraw,T,R,Q,Z,H,W,path)
                        else
                                  priorcount  = priorcount + 1  # number of rejection
                                  lastdraw    = lastdraw        # keep the current draw
+                                 if ii>1
+                                         y_multiplier[ii],c_multiplier[ii],i_multiplier[ii]=y_multiplier[ii-1],c_multiplier[ii-1],i_multiplier[ii-1]
+                                 else
+                                         y_multiplier[ii],c_multiplier[ii],i_multiplier[ii]=PVmultiplier(calibpara,lastdraw,T,R,Q,Z,H,W,path)
+                                 end
                        end
 
                 end
 
                 para_drawn[ii] =  lastdraw
                 println("Accept:", acceptcount,", Reject:", priorcount  )
-                y_multiplier[ii],c_multiplier[ii],i_multiplier[ii]=PVmultiplier(calibpara,estimpara,T,R,Q,Z,H,W,path)
-
         end
         return para_drawn, acceptcount, priorcount, y_multiplier, c_multiplier, i_multiplier
 end
-
-## Implement
-simlen = 20  ;model  = 5.1
-initialdraw = mean([DrawParaFromPrior() for i=1:100])
-cc       = 0.1 # tuned to have acceptance rate 0.2-0.4
-
-
-para_drawn, acceptcount, priorcount, y_multiplier, c_multiplier, i_multiplier  = myMH(model, simlen, cc, initialdraw, Σ0,  obsdata ) ;
-
-# Summarize the Results
-println("Accept:", acceptcount,", Reject:", priorcount  )
-mean(para_drawn), std(para_drawn)
