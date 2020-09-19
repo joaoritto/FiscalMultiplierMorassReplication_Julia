@@ -1,0 +1,60 @@
+%2multibyte Version: 5.50.0.2960 CodePage: 65001
+\documentclass[letterpaper,12pt]{article}%
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage[toc,page]{appendix}
+\usepackage[doublespacing]{setspace}
+\usepackage{geometry}
+\usepackage{amsfonts}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+\usepackage[format=default,labelsep=newline,justification=centering,width=0.95\textwidth
+]{caption}
+
+
+\geometry{left=0.75in,right=0.75in,top=0.75in,bottom=0.75in}
+\begin{document}
+
+\title{ECON 722 Term Paper: Monetary and fiscal policy interactions}
+\author{Yoshiki Ando and Joao Ritto}
+\maketitle
+% Let me call Leeper et al. (2017) by LTW
+
+\subsubsection*{Prior Distribution}
+We follow Table 2 in LTW for prior distributions. There are 34 parameters. The prior distributions include Normal, Gamma, Beta, Uniform, and Inverse Gamma distribution. The parameters  governing the distribution (e.g. shape and scale parameters in the Gamma distribution) are set to yield a particular mean and standard deviation. Therefore, the first task is converting the mean ($\mu$) and standard deviation ($\sigma$) to the shape/scale parameters in each distribution. For example, $\alpha$ (shape) and $\beta$ (scale) parameters in Gamma distribution is set to be:
+\begin{align*}
+\alpha = \left( \mu/\sigma  \right)^2, \ \beta = \sigma^2/\mu 
+\end{align*}
+Since $\xi$ follows the Gamma distribution with $\mu=2, \ \sigma=0.5$, we draw $\xi$ from $Gamma(\alpha=16, \beta=8)$. To evaluate the density for a specific value of $\xi$, we apply the density function to the value $x$:
+\begin{align*}
+f(x; \alpha, \beta) = \frac{x^{\alpha-1}  e^{-x/\beta }}{\Gamma(\alpha) \beta^\alpha}
+\end{align*}
+Since the package ``Distribution.jl'' contains this density function, we can draw $\xi$ by the command $rand(Gamma(\alpha,\beta))$ and evaluate the density at $x$ by $pdf(Gamma(\alpha,\beta), x )$. The procedures are the same for other values. All the parameters are drawn by the function $DrawParaFromPrior( )$, and all the parameter densities are evaluated by the function $ParaDensity(paraValues )$, where $paraValues$ is the vector of parameters.
+
+\subsubsection*{Kalman Filter}
+Running the Kalman filter and evaluating the likelihood of the parameters given the data is standard. We follow the following notation:
+\begin{align*}
+\alpha_t &= T \alpha_{t-1} + R \eta_t, \ \text{where } \eta_t \sim N(0,Q) \\
+y_t &= Z \alpha_t + \epsilon_t + W, \ \text{where } \epsilon_t \sim N(0,H)
+\end{align*}
+Then, the Kalman filter is computed in the recursive way:
+\begin{align*}
+a_{t/t-1} &= T a_{t-1} \\
+P_{t/t-1} &= T P_{t-1} T' + R Q R' \\
+a_t &= a_{t/t-1} + P_{t/t-1} Z' F_t^{-1} v_t\\
+P_t &= P_{t/t-1} - P_{t/t-1} Z' F_t^{-1} Z P_{t/t-1} \\
+\text{where } F_t&= Z P_{t/t-1} Z' + H, \ v_t = y_t - Z a_{t/t-1} - W,
+\end{align*}
+with the proper initialization. Finally, the likelihood is given by:
+\begin{align*}
+\ln L = -\frac{NT}{2} \ln 2\pi - \frac{1}{2} \sum_{t=1}^{T} \ln |F_t| - \frac{1}{2} \sum_{t=1}^T v_t' F_t^{-1} v_t,
+\end{align*}
+where $N,T$ denote the dimension of observables and the number of periods.
+
+\subsubsection*{Data}
+Following LTW, we use the US data from 1955:I to 2007:IV to focus in the pre-financial crisis periods. The data is contained in the file ``data.mat'' from their replication folder. There are 8 variables: $[C, I, w, GC, B, L, Pi, R]$ (log differences of aggregate consumption, investment, real wages, real government consumption, the real market-value of government debt, log hours worked, the GDP deflator, and the federal funds rate).
+\end{document}
