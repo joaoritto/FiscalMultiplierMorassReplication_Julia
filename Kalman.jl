@@ -2,7 +2,7 @@
 # Yoshiki, August 21st
 
 # State Space Representation
-# α_t = α_{t-1} + R η_t
+# α_t = T α_{t-1} + R η_t
 # y_t = Z α_t + ϵ_t + W
 # η_t ∼ N(0,Q), ϵ_t ∼ N(o,H)
 
