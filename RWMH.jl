@@ -53,20 +53,20 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata ,path  )
         lastdraw = initialdraw
 
         # Cholesky decomposition
-        P=factorize(Σ)
+        P=cholesky(Σ)
 
 
         ## Start the Algorithm
          for ii = 1:simlen
 
         # Draw a candidate by θ = θ^{i-1} + η, where η ∼ N(0,c²Σ)
-        cand_draw = lastdraw + cc*P* randn(size(Σ,1))
+        cand_draw = lastdraw + cc*P.U* randn(size(Σ,1))
 
                 # checks if ant σ parameters are negative
                 # Otherwise, evaluate the densities of candidate parameters
                 cand_σ_sign = prod(cand_draw[end-7:end] .> 0) # false if any of σ is negative
                 if cand_σ_sign== false
-                        cand_density = zeros(length(vSD))
+                        cand_density = zeros(size(Σ,1))
                  println("false (σ_sign)")
                 else
                 # Evaluate the Densities
@@ -78,7 +78,7 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata ,path  )
                 # cand_density_positive = prod(cand_density) > 1e-15
                 # println([prod(cand_density), prod(cand_draw[end-7:end])])
 
-                if prod(cand_density) < 1e-15
+                if prod(cand_density) < 1e-200
                           priorcount  = priorcount + 1  # number of rejection
                           lastdraw    = lastdraw        # keep the last draw
 
@@ -116,9 +116,11 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata ,path  )
                        # Evaluate the Likelihood
                        candlike = myKalmanLogLikelihood(T,R,Q,Z,H,W,obsdata)
                        postcand = log(prod(cand_density)) + candlike
-                       println(candlike)
+                       println(postcand)
 
                        " Accept if likelihood is high enough"
+                       println(postcand - postlast)
+                       println(min( exp(postcand - postlast),1))
                        if min( exp(postcand - postlast),1) > rand()
                                  acceptcount = acceptcount + 1 # nember of acceptance
                                  lastdraw    = cand_draw       # replace with the new draw

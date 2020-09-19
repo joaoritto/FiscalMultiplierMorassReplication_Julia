@@ -13,9 +13,10 @@ include(path*"Kalman.jl")
 include(path*"ConvertMode.jl")
 include(path*"RWMH.jl")
 
-N_initialization=1000
-N=100000
+N_initialization=5000
+N=5000
 model  = "5.1"
+
 if model=="5.1"
         regime="M"
 else
@@ -55,11 +56,21 @@ end
 
 
 initialdraw=mymode
-cc       = 0.1 # tuned to have acceptance rate 0.2-0.4
+c0       = 0.05 # tuned to have acceptance rate 0.2-0.4
 
 
-para_drawn, acceptcount, priorcount, y_multiplier, c_multiplier, i_multiplier  = myMH(model, N_initialization, cc, initialdraw, Σ0,  obsdata,path ) ;
+para_drawn, acceptcount, priorcount, y_multiplier, c_multiplier, i_multiplier  = myMH(model, N_initialization, c0, initialdraw, Σ0,  obsdata,path ) ;
 
 # Summarize the Results
 println("Accept:", acceptcount,", Reject:", priorcount  )
-mean(para_drawn), std(para_drawn)
+
+# Estimation
+Σ=cov(para_drawn)
+
+cd(path) # go to the current directory
+
+save("file/Results_RWMH_initialization.jld","CovMatrix",
+Σ, "ParaDrawn", para_drawn, "Accepted", acceptcount,"Rejected",priorcount)
+
+#c=0.28
+#para_drawn, acceptcount, priorcount, y_multiplier, c_multiplier, i_multiplier  = myMH(model, N, c, initialdraw, Σ,  obsdata,path ) ;
