@@ -138,3 +138,108 @@ end
 # Compare
 #Mode_compare = [Leeper_mode_2, my_mode]
 #println([Leeper_mode, my_mode])
+
+
+## Function to Convert Var-Cov Matrix
+
+function convertVarCovF(Leeper_CovF)
+    # From Leeper's Order to Our Order
+    vConvertF = [1,2,9,8,6,7,11,10,13,14,20,23,28,29,15,30,32,31,24,27,#20
+                36,37,41,38,40,39,42,43,3,5,33,34,35,44,45]
+    vDivide100F = [1,21,22,23,24,25,26,27,28]
+    # Matrix to Store our Var-Cov Matrix
+    VarCovF_converted = ones(45,45)
+
+    for ii = 1:length(vConvertF)
+    for jj = 1:length(vConvertF)
+        VarCovF_converted[vConvertF[ii],vConvertF[jj]] = Leeper_CovF[ii,jj]
+        # Divide by 100 if necessary
+        if jj in vDivide100F
+            VarCovF_converted[vConvertF[ii],vConvertF[jj]] =
+                VarCovF_converted[vConvertF[ii],vConvertF[jj]]/100
+        end
+
+        if ii in vDivide100F
+            VarCovF_converted[vConvertF[ii],vConvertF[jj]] =
+                VarCovF_converted[vConvertF[ii],vConvertF[jj]]/100
+        end
+    end
+    end
+
+    return VarCovF_converted
+end
+
+function convertVarCovM(Leeper_CovM)
+    # From Leeper's Order to Our Order
+    vConvertM = [1,2,9,8,6,7,11,10,12,14,16,19,28,29,15,30,32,31,24,36,#20
+                37,41,38,40,39,42,43,3,5,33,34,44,45]
+    vDivide100M = [1,20,21,22,23,24,25,26,27]
+
+    # Matrix to Store our Var-Cov Matrix
+    VarCovM_converted = ones(45,45)
+
+    for ii = 1:length(vConvertM)
+    for jj = 1:length(vConvertM)
+        VarCovM_converted[vConvertM[ii],vConvertM[jj]] = Leeper_CovM[ii,jj]
+        # Divide by 100 if necessary
+        if jj in vDivide100M
+            VarCovM_converted[vConvertM[ii],vConvertM[jj]] =
+                VarCovM_converted[vConvertM[ii],vConvertM[jj]]/100
+        end
+
+        if ii in vDivide100M
+            VarCovM_converted[vConvertM[ii],vConvertM[jj]] =
+                VarCovM_converted[vConvertM[ii],vConvertM[jj]]/100
+        end
+    end
+    end
+
+    return VarCovM_converted
+end
+
+## Implementation
+# path="/Users/yoshiki/Dropbox/Morass/MyJuliaCode/0918/"
+# using MAT, JLD
+# cd(path)
+
+# Leeper's Mode and Var-Cov
+# fileF  = read(matopen("mode_regimeF_5507.mat")) # load data
+# Leeper_modeF = fileF["mode"]
+# Leeper_CovF  = fileF["inverseHessianmode"]
+
+# fileM  = read(matopen("mode_regimeM_5507.mat")) # load data
+# Leeper_modeM = fileM["mode"]
+# Leeper_CovM  = fileM["inverseHessianmode"]
+
+## Converting!
+# OurVarCovM = convertVarCovM(Leeper_CovM)
+# OurVarCovF = convertVarCovF(Leeper_CovF)
+
+
+
+
+" Checking if this method works for mode too!
+function convertModeF(Leeper_modeF)
+    # From Leeper's Order to Our Order
+    vConvertF = [1,2,9,8,6,7,11,10,13,14,20,23,28,29,15,30,32,31,24,27,#20
+                36,37,41,38,40,39,42,43,3,5,33,34,35,44,45]
+    vDivide100F = [1,21,22,23,24,25,26,27,28]
+    # Matrix to Store our Var-Cov Matrix
+    modeF_converted = ones(45)
+
+    for ii = 1:length(vConvertF)
+        modeF_converted[vConvertF[ii]] = Leeper_modeF[ii]
+        # Divide by 100 if necessary
+        if ii in vDivide100F
+            modeF_converted[vConvertF[ii]] =
+                modeF_converted[vConvertF[ii]]/100
+        end
+    end
+
+    return modeF_converted
+end
+
+Fmode2 = convertModeF(Leeper_modeF)
+Fmode1 = transform_F(Leeper_modeF)
+Fmode1 == Fmode2
+"
