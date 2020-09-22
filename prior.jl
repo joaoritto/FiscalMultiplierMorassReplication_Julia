@@ -327,11 +327,11 @@ vDensities2 = vDensities.* estimpararestric + (1 .- estimpararestric)
 if regime == "M"
    regimeM01 = ones(Int64,length(vDensities))
    regimeM01[[13,20,21,22,23]] = zeros(Int64,5) # create a vector similar to estimpararestric
-   vDensities3 = vDensities.* regimeM01 + (1 .- regimeM01)
+   vDensities3 = vDensities2.* regimeM01 + (1 .- regimeM01)
 else # regime "F"
    regimeF01 = ones(Int64,length(vDensities))
    regimeF01[[12,16,17,18,19]] = zeros(Int64,5)
-   vDensities3 = vDensities.* regimeF01 + (1 .- regimeF01)
+   vDensities3 = vDensities2.* regimeF01 + (1 .- regimeF01)
 end
 
 if subsorcompl==1

@@ -65,10 +65,10 @@ function transform_F(Leeper_mode) # 35 elements
     L_bar  = Leeper_mode[34]
     pi_bar = Leeper_mode[35]
 
-    Mode_trans = [γ,ξ,θ,μ,α_G,ψ,s,ω_p,ω_w,
-        χ_p,χ_w,ϕ_πM,ϕ_πF,ϕ_y,ρ_r,
-        γ_GM,γ_KM,γ_LM,γ_ZM,γ_GF,γ_KF,γ_LF,γ_ZF,
-        ρ_G,ρ_K,ρ_L,ρ_Z,ρ_a,ρ_b,ρ_i,ρ_p,ρ_w,ρ_em,ρ_eg,ρ_ez ,
+    Mode_trans = [γ,ξ,θ,α_G,ψ,s,ω_p,ω_w,
+        χ_p,χ_w,ϕ_πF,ϕ_y,ρ_r,
+        γ_GF,γ_ZF,
+        ρ_G,ρ_Z,ρ_a,ρ_b,ρ_i,ρ_p,ρ_w,ρ_em,ρ_eg,ρ_ez ,
         σ_a,σ_b,σ_i,σ_p,σ_w,σ_em,σ_eg,σ_ez, L_bar, pi_bar]
 
     return Mode_trans
@@ -122,10 +122,10 @@ function transform_M(Leeper_mode) # 35 elements
     L_bar  = Leeper_mode[32]
     pi_bar = Leeper_mode[33]
 
-    Mode_trans = [γ,ξ,θ,μ,α_G,ψ,s,ω_p,ω_w,
-        χ_p,χ_w,ϕ_πM,ϕ_πF,ϕ_y,ρ_r,
-        γ_GM,γ_KM,γ_LM,γ_ZM,γ_GF,γ_KF,γ_LF,γ_ZF,
-        ρ_G,ρ_K,ρ_L,ρ_Z,ρ_a,ρ_b,ρ_i,ρ_p,ρ_w,ρ_em,ρ_eg,ρ_ez ,
+    Mode_trans = [γ,ξ,θ,α_G,ψ,s,ω_p,ω_w,
+        χ_p,χ_w,ϕ_πM,ϕ_y,ρ_r,
+        γ_GM,γ_ZM,
+        ρ_G,ρ_a,ρ_b,ρ_i,ρ_p,ρ_w,ρ_em,ρ_eg,
         σ_a,σ_b,σ_i,σ_p,σ_w,σ_em,σ_eg,σ_ez, L_bar, pi_bar]
 
     return Mode_trans
@@ -144,11 +144,11 @@ end
 
 function convertVarCovF(Leeper_CovF)
     # From Leeper's Order to Our Order
-    vConvertF = [1,2,9,8,6,7,11,10,13,14,20,23,28,29,15,30,32,31,24,27,#20
-                36,37,41,38,40,39,42,43,3,5,33,34,35,44,45]
+    vConvertF = [1,2,8,7,5,6,10,9,11,12,14,15,18,19,13,20,22,21,16,17,#20
+                26,27,31,28,30,29,32,33,3,4,23,24,25,34,35]
     vDivide100F = [1,21,22,23,24,25,26,27,28]
     # Matrix to Store our Var-Cov Matrix
-    VarCovF_converted = ones(45,45)
+    VarCovF_converted = zeros(35,35)
 
     for ii = 1:length(vConvertF)
     for jj = 1:length(vConvertF)
@@ -171,12 +171,12 @@ end
 
 function convertVarCovM(Leeper_CovM)
     # From Leeper's Order to Our Order
-    vConvertM = [1,2,9,8,6,7,11,10,12,14,16,19,28,29,15,30,32,31,24,36,#20
-                37,41,38,40,39,42,43,3,5,33,34,44,45]
+    vConvertM = [1,2,8,7,5,6,10,9,11,12,14,15,17,18,13,19,21,20,16,24,#20
+                25,29,26,28,27,30,31,3,4,22,23,32,33]
     vDivide100M = [1,20,21,22,23,24,25,26,27]
 
     # Matrix to Store our Var-Cov Matrix
-    VarCovM_converted = ones(45,45)
+    VarCovM_converted = zeros(33,33)
 
     for ii = 1:length(vConvertM)
     for jj = 1:length(vConvertM)
