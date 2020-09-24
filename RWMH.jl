@@ -129,7 +129,7 @@ end
 
 ## Function for Metropolis-Hastings Algorithm
 
-function myMH(model, simlen, cc, initialdraw, Σ,  obsdata ,path  )
+function myMH(model, simlen, cc, initialdraw, Σ,initiallik,  obsdata ,path  )
         ## Take the "estimpararestric, regime, subsorcompl"
         # Specify the Model
         current_model = model
@@ -152,20 +152,17 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata ,path  )
         c_multiplier = [zeros(41) for i=1:simlen]
         i_multiplier = [zeros(41) for i=1:simlen]
 
-        priorcount = 0; acceptcount = 0; postlast = -1e12;
+        priorcount = 0; acceptcount = 0; postlast = initiallik;
 
         ## Initial Value
         # Just Draw from the Prior Distribution
         lastdraw = initialdraw
 
-        # Cholesky decomposition
-        P=cholesky(Σ)
-
         ## Start the Algorithm
          for ii = 1:simlen
 
         # Draw a candidate by θ = θ^{i-1} + η, where η ∼ N(0,c²Σ)
-        cand_draw = lastdraw + cc*P.U* randn(size(Σ,1))
+        cand_draw = lastdraw + cc*rand(MvNormal(zeros(size(Σ,1)),Σ))
         estimpara=transform_estimpara(regime,cand_draw)
 
                 # checks if ant σ parameters are negative
@@ -173,7 +170,9 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata ,path  )
                 cand_σ_sign = prod(cand_draw[end-9:end-2] .> 0) # false if any of σ is negative
                 if cand_σ_sign== false
                         cand_density = zeros(size(Σ,1))
-                 #println("false (σ_sign)")
+                 println("false (σ_sign)")
+                elseif cand_draw[3]*exp(-cand_draw[1])>1
+                        cand_density = zeros(size(Σ,1))
                 else
                 # Evaluate the Densities
 
@@ -182,17 +181,14 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata ,path  )
                                                estimpararestric, regime, subsorcompl)
                 end
 
-                # cand_density_positive = prod(cand_density) > 1e-15
-                # println([prod(cand_density), prod(cand_draw[end-7:end])])
 
-                if prod(cand_density) < 1e-200
+                if sum(log.(cand_density)) < -10e10
                           priorcount  = priorcount + 1  # number of rejection
                           lastdraw    = lastdraw        # keep the last draw
 
                           if ii>1
                                   y_multiplier[ii],c_multiplier[ii],i_multiplier[ii]=y_multiplier[ii-1],c_multiplier[ii-1],i_multiplier[ii-1]
                           else
-                                  println(cand_draw[1])
                                   oldestimpara=transform_estimpara(regime,lastdraw)
                                   Γ_0s, Γ_1s, constants, Ψs, Πs = linearizedmodel(calibpara,oldestimpara,regime,path)
 
@@ -210,7 +206,6 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata ,path  )
                 else # density of the draw is not zero
                         " Solve the model + Evaluate the Likelihood"
                         # Structural Model
-
                        Γ_0s, Γ_1s, constants, Ψs, Πs = linearizedmodel(calibpara,estimpara,regime,path)
 
                        # Recover the dense matrix
@@ -223,12 +218,11 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata ,path  )
 
                        # Evaluate the Likelihood
                        candlike = myKalmanLogLikelihood(T,R,Q,Z,H,W,obsdata)
-                       postcand = log(prod(cand_density)) + candlike
-                  #     println(postcand)
+                       postcand = sum(log.(cand_density)) + candlike
+                       println(postcand)
 
                        " Accept if likelihood is high enough"
-                   #    println(postcand - postlast)
-                    #   println(min( exp(postcand - postlast),1))
+                       println(min( exp(postcand - postlast),1))
                        if min( exp(postcand - postlast),1) > rand()
                                  acceptcount = acceptcount + 1 # nember of acceptance
                                  lastdraw    = cand_draw       # replace with the new draw
@@ -248,8 +242,88 @@ function myMH(model, simlen, cc, initialdraw, Σ,  obsdata ,path  )
                 end
 
                 para_drawn[ii] =  lastdraw
-        #        println("Accept:", acceptcount,", Reject:", priorcount  )
+                println("Accept:", acceptcount,", Reject:", priorcount  )
 
         end
         return para_drawn, acceptcount, priorcount, y_multiplier, c_multiplier, i_multiplier
+end
+
+
+function myMHinitialization(model, cc, initialdraw, Σ,  obsdata ,path)
+        ## Take the "estimpararestric, regime, subsorcompl"
+        # Specify the Model
+        current_model = model
+        if model=="5.1"
+                regime="M"
+        else
+                regime="F"
+        end
+        # Apply the function "modelrestrictions"
+        calibpara0=calibratedpara();
+        estimpara0=transform_estimpara(regime,initialdraw)
+        calibpara,estimpara,calibpararestric,estimpararestric,regime,subsorcompl =
+                     modelrestrictions(current_model,calibpara0,estimpara0)
+        # global regime
+
+        ## Array to Store the Parameters drawn
+        para_drawn = zeros(size(Σ,1))
+        postlast=-10e100
+
+        ## Initial Value
+        # Just Draw from the Prior Distribution
+        lastdraw = initialdraw
+
+
+        ## Start the Algorithm
+        while postlast<-10e10
+
+        # Draw a candidate by θ = θ^{i-1} + η, where η ∼ N(0,c²Σ)
+        cand_draw = lastdraw + cc*rand(MvNormal(zeros(size(Σ,1)),Σ))
+        estimpara=transform_estimpara(regime,cand_draw)
+
+                # checks if ant σ parameters are negative
+                # Otherwise, evaluate the densities of candidate parameters
+                cand_σ_sign = prod(cand_draw[end-9:end-2] .> 0) # false if any of σ is negative
+                if cand_σ_sign== false
+                        cand_density = zeros(size(Σ,1))
+                 println("false (σ_sign)")
+                elseif cand_draw[3]*exp(-cand_draw[1])>1
+                        cand_density = zeros(size(Σ,1))
+                else
+                # Evaluate the Densities
+
+                cand_pdf1     = ParaDensity(estimpara ) # Evaluate the Density
+                cand_density  = JointDensities(cand_pdf1 , # Replace the irrelevant density by 1
+                                               estimpararestric, regime, subsorcompl)
+                end
+
+
+                if sum(log.(cand_density)) < -10e10
+                          postlast=-10e100
+
+                else # density of the draw is not zero
+                        " Solve the model + Evaluate the Likelihood"
+                        # Structural Model
+                       Γ_0s, Γ_1s, constants, Ψs, Πs = linearizedmodel(calibpara,estimpara,regime,path)
+
+                       # Recover the dense matrix
+                       Γ_0 = Matrix(Γ_0s); Γ_1 = Matrix(Γ_1s);
+                       constant = Vector(constants); Ψ = Matrix(Ψs); Π = Matrix(Πs)
+
+                       # Express in State-Space Form
+                       G1, C, impact, qt, a, b, z, eu=mygensys(Γ_0,Γ_1,constant,Ψ,Π)
+                       T, R, Q, Z, H, W=statespacematrices(G1,C,impact,calibpara,estimpara,path)
+
+                       # Evaluate the Likelihood
+                       candlike = myKalmanLogLikelihood(T,R,Q,Z,H,W,obsdata)
+                       postcand = sum(log.(cand_density)) + candlike
+                       println(postcand)
+                       postlast=postcand
+               end
+
+        end
+
+        para_drawn =  cand_draw
+
+        return para_drawn, postlast
 end

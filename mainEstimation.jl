@@ -13,7 +13,7 @@ include(path*"Kalman.jl")
 include(path*"ConvertMode.jl")
 include(path*"RWMH.jl")
 
-N=1000
+N=10000
 model  = "5.1"
 
 if model=="5.1"
@@ -60,10 +60,13 @@ end
 
 
 initialdraw=mymode
-cc       = 0.1 # tuned to have acceptance rate 0.2-0.4
+c0=1
+cc       = 0.28 # tuned to have acceptance rate 0.2-0.4
+
+para0,postlik0=myMHinitialization(model, c0, initialdraw, Σ0,  obsdata ,path)
 
 
-para_drawn, acceptcount, priorcount, y_multiplier, c_multiplier, i_multiplier  = myMH(model, N, cc, initialdraw, Σ0,  obsdata,path ) ;
+para_drawn, acceptcount, priorcount, y_multiplier, c_multiplier, i_multiplier  = myMH(model, N, cc, initialdraw, Σ0,postlik0, obsdata,path ) ;
 
 # Summarize the Results
 println("Accept:", acceptcount,", Reject:", priorcount  )

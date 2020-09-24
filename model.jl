@@ -925,11 +925,11 @@ function statespacematrices(G1,C,impact,calibpara,estimpara,path)
     Z=zeros(num_obsvariables,num_statevariables)
     Z[1,dcobs_var]=1
     Z[2,diobs_var]=1
-    Z[3,Lobs_var]=1
+    Z[3,dwobs_var]=1
     Z[4,dgobs_var]=1
     Z[5,dbobs_var]=1
-    Z[6,πobs_var]=1
-    Z[7,dwobs_var]=1
+    Z[6,Lobs_var]=1
+    Z[7,πobs_var]=1
     Z[8,Robs_var]=1
 
     γ=estimpara[1]
@@ -941,17 +941,17 @@ function statespacematrices(G1,C,impact,calibpara,estimpara,path)
     else
         Lbar=0
         Πbar=0
-    end  
+    end
     RRbar=exp(γ)/β
 
     W=zeros(num_obsvariables)
     W[1]=γ*100
     W[2]=γ*100
-    W[3]=Lbar
+    W[3]=γ*100
     W[4]=γ*100
     W[5]=γ*100
-    W[6]=Πbar
-    W[7]=γ*100
+    W[6]=Lbar
+    W[7]=Πbar
     W[8]=Πbar+RRbar
 
     # Need to define what the steady state values in these last constants should equal to
