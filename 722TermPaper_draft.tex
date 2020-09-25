@@ -24,6 +24,22 @@
 \maketitle
 % Let me call Leeper et al. (2017) by LTW
 
+\section{Introduction}
+
+In this term paper we wanted to work with the model developed in Leeper et al. (2017) (LTW, henceforth) for a variety of reasons. Firstly, the topic of the effects of Fiscal Policy seemed to us an interesting and far from settled, hence studying this model could help us get better acquainted with the literature and how to potentially tackle questions about fiscal multipliers under different settings. Secondly, the fact that the model is reasonably large made our task challenging in a good way, allowing us to to take a large step in the learning curve of DSGE estimation. Thirdly, we thought about specific things that would be interesting to do with this model, once we had replicated the paper's work.
+
+The last of these reasons proved to be part of an overly ambitious and somewhat optimistic plan. Unfortunately, the replicating process proved itself a lot more cumbersome than we had expected, leaving us no time to go further. However, a brighter reading of this is that we ended up learning a lot more than we initially thought was needed for the replication of the paper.
+
+As will be seen below, we coded the model in Julia and replicated some of its main tables. Computing time also caught us unprepared: LTW run the Random Walk Metropolis Hastings algorithm with 1.5 million draws, but we ended up not doing it with more than 100 thousand. Even this number took more than 24 hours in our laptops and we had trouble finding obvious ways of making our code more efficient.
+
+In the section that follows we discuss our implementation. Section 3 presents the main results we replicated, discussing how they differ from the paper's. The last section concludes.
+
+\section{Implementation}
+
+\subsection{Prior Predictive Analysis}
+
+LTW starts with a Prior Predictive Analysis in which different versions of the model are simulating, taking parameter draws from a prior distribution to study the range of fiscal multipliers that each of these submodels can generate. We replicated these results with N=20,000 as LTW. Our results are very similar but not exactly similar to the second decimal.
+
 \subsubsection*{Prior Distribution}
 We follow Table 2 in LTW for prior distributions. There are 34 parameters. The prior distributions include Normal, Gamma, Beta, Uniform, and Inverse Gamma distribution. The parameters  governing the distribution (e.g. shape and scale parameters in the Gamma distribution) are set to yield a particular mean and standard deviation. Therefore, the first task is converting the mean ($\mu$) and standard deviation ($\sigma$) to the shape/scale parameters in each distribution. For example, $\alpha$ (shape) and $\beta$ (scale) parameters in Gamma distribution is set to be:
 \begin{align*}
@@ -34,6 +50,9 @@ Since $\xi$ follows the Gamma distribution with $\mu=2, \ \sigma=0.5$, we draw $
 f(x; \alpha, \beta) = \frac{x^{\alpha-1}  e^{-x/\beta }}{\Gamma(\alpha) \beta^\alpha}
 \end{align*}
 Since the package ``Distribution.jl'' contains this density function, we can draw $\xi$ by the command $rand(Gamma(\alpha,\beta))$ and evaluate the density at $x$ by $pdf(Gamma(\alpha,\beta), x )$. The procedures are the same for other values. All the parameters are drawn by the function $DrawParaFromPrior( )$, and all the parameter densities are evaluated by the function $ParaDensity(paraValues )$, where $paraValues$ is the vector of parameters.
+
+
+\subsubsection*{Solving the Model}
 
 \subsubsection*{Kalman Filter}
 Running the Kalman filter and evaluating the likelihood of the parameters given the data is standard. We follow the following notation:
