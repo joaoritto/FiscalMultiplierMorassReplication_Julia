@@ -14,6 +14,8 @@
 # 3.2 Regime F, short debt
 # 3.3 Regime F, long debt
 
+# 3.4 Regime M, ss tax only (figure 1) 
+
 # 4 New Keynesian G in utility
 # 4.1 Regime M, substitutes
 # 4.2 Regime M, complements
@@ -28,7 +30,8 @@
 # 4.11 Regime F, complements, short debt, no tax
 # 4.12 Regime F, complements, long debt, no tax
 
-# 5 (For the estimation) New Keynesian G in utility
+
+# 5 New Keynesian G in utility (For the estimation)
 # 5.1 Regime M, unrestricted, ss tax only
 # 5.2 Regime F, unrestricted, ss tax only
 
@@ -142,6 +145,24 @@ function modelrestrictions(model,calibpara0,estimpara0)
         estimpararestric[5]=0 # α_G
 
         changeestimpara[5]=0.0 # α_G
+        
+    elseif model=="3.4"
+
+        regime="M"
+
+        # α_G=0
+
+        estimpararestric[5]=0 # α_G
+        estimpararestric[17]=0 # γ_KM
+        estimpararestric[18]=0 # γ_LM
+        estimpararestric[25]=0 # ρ_K
+        estimpararestric[26]=0 # ρ_L
+
+        changeestimpara[5]=0.0 # α_G
+        changeestimpara[17]=0.0 # γ_KM
+        changeestimpara[18]=0.0 # γ_LM
+        changeestimpara[25]=0.0 # ρ_K
+        changeestimpara[26]=0.0 # ρ_L
 
     elseif model=="4.1"
 
