@@ -91,6 +91,113 @@ where $N,T$ denote the dimension of observables and the number of periods.
 \subsubsection{Random Walk Metropolis Hastings}
 
 \section{Results}
+The first tables we present show our results for the prior predictive analysis. They attempt to replicate tables 3 and 4 of LTW. The numbers tell us, for each of the model versions, what is the prior probability that the fiscal multipliers on output, consumption or investment are large, for different time horizons. Some of our numbers do not match LTW to the second decimal, but they are quite close: they tells us that in general the fiscal regime has higher multipliers and that the model that uses G in utility is more able to produce large multipliers overall than the model with non-savers.
+
+\begin{table}[H]
+    \centering
+    \caption{Government Spending Output Multiplier Probabilities Implied By Prior Predictive Analysis Based on 20,000 Draws From the Prior Distribution}
+    \begin{tabular}{c c c c c c}
+    \toprule
+        & multicolumn{5}{$Pr\Big(PV \frac{\triangle Y}{\triangle G}}>1\Big)$}\\
+        & Impact & 4 qtrs & 10 qrts & 25 qrts & 10 years \\
+     Model 1: RBC real frictions &    &   &   &   &  \\
+     Model 2: New Keynesian sticky prices and wages    &    &   &   &   &  \\
+     \quad Regime M &    &   &   &   &  \\
+     \quad Regime F, short debt &    &   &   &   &  \\
+     \quad Regime F, long debt &    &   &   &   &  \\
+     Model 3: New Keynesian non-savers &    &   &   &   &  \\
+     \quad Regime M &    &   &   &   &  \\
+     \quad Regime F, short debt &    &   &   &   &  \\
+     \quad Regime F, long debt &    &   &   &   &  \\
+     Model 4: New Keynesian G in utility &    &   &   &   &  \\
+     \quad Regime M, substitutes &    &   &   &   &  \\
+     \quad Regime M, complements &    &   &   &   &  \\
+     \quad Regime M, complements, ss tax only &    &   &   &   &  \\
+     \quad Regime M, complements, no tax &    &   &   &   &  \\
+     \quad Regime F, substitutes, short debt &    &   &   &   &  \\
+     \quad Regime F, substitutes, long debt &    &   &   &   &  \\
+     \quad Regime F, complements, short debt &    &   &   &   &  \\
+     \quad Regime F, complements, long debt &    &   &   &   &  \\
+     \quad Regime F, complements, short debt, ss tax only &    &   &   &   &  \\
+     \quad Regime F, complements, long debt, ss tax only &    &   &   &   &  \\
+     \quad Regime F, complements, short debt, no tax &    &   &   &   &  \\
+     \quad Regime F, complements, long debt, no tax &    &   &   &   &  \\
+     \midrule
+    \bottomrule    
+    \end{tabular}
+    \label{tab:PPAOutputMultipliers}
+\end{table}
+
+\begin{table}[H]
+    \centering
+     \caption{Government Spending Consumption Multiplier Probabilities Implied By Prior Predictive Analysis Based on 20,000 Draws From the Prior Distribution}
+    \begin{tabular}{c c c c c c}
+    \toprule
+        & multicolumn{5}{$Pr\Big(PV \frac{\triangle C}{\triangle G}}>0\Big)$}\\
+        & Impact & 4 qtrs & 10 qrts & 25 qrts & 10 years \\
+     Model 1: RBC real frictions &    &   &   &   &  \\
+     Model 2: New Keynesian sticky prices and wages    &    &   &   &   &  \\
+     \quad Regime M &    &   &   &   &  \\
+     \quad Regime F, short debt &    &   &   &   &  \\
+     \quad Regime F, long debt &    &   &   &   &  \\
+     Model 3: New Keynesian non-savers &    &   &   &   &  \\
+     \quad Regime M &    &   &   &   &  \\
+     \quad Regime F, short debt &    &   &   &   &  \\
+     \quad Regime F, long debt &    &   &   &   &  \\
+     Model 4: New Keynesian G in utility &    &   &   &   &  \\
+     \quad Regime M, substitutes &    &   &   &   &  \\
+     \quad Regime M, complements &    &   &   &   &  \\
+     \quad Regime M, complements, ss tax only &    &   &   &   &  \\
+     \quad Regime M, complements, no tax &    &   &   &   &  \\
+     \quad Regime F, substitutes, short debt &    &   &   &   &  \\
+     \quad Regime F, substitutes, long debt &    &   &   &   &  \\
+     \quad Regime F, complements, short debt &    &   &   &   &  \\
+     \quad Regime F, complements, long debt &    &   &   &   &  \\
+     \quad Regime F, complements, short debt, ss tax only &    &   &   &   &  \\
+     \quad Regime F, complements, long debt, ss tax only &    &   &   &   &  \\
+     \quad Regime F, complements, short debt, no tax &    &   &   &   &  \\
+     \quad Regime F, complements, long debt, no tax &    &   &   &   &  \\
+    \bottomrule    
+    \end{tabular}
+    \label{tab:my_label}
+\end{table}
+
+
+\begin{table}[H]
+    \centering
+    \caption{Government Spending Investment Multiplier Probabilities Implied By Prior Predictive Analysis Based on 20,000 Draws From the Prior Distribution}
+    \begin{tabular}{c c c c c c}
+    \toprule
+        & multicolumn{5}{$Pr\Big(PV \frac{\triangle I}{\triangle G}}>0\Big)$}\\
+        & Impact & 4 qtrs & 10 qrts & 25 qrts & 10 years \\
+     Model 1: RBC real frictions &    &   &   &   &  \\
+     Model 2: New Keynesian sticky prices and wages    &    &   &   &   &  \\
+     \quad Regime M &    &   &   &   &  \\
+     \quad Regime F, short debt &    &   &   &   &  \\
+     \quad Regime F, long debt &    &   &   &   &  \\
+     Model 3: New Keynesian non-savers &    &   &   &   &  \\
+     \quad Regime M &    &   &   &   &  \\
+     \quad Regime F, short debt &    &   &   &   &  \\
+     \quad Regime F, long debt &    &   &   &   &  \\
+     Model 4: New Keynesian G in utility &    &   &   &   &  \\
+     \quad Regime M, substitutes &    &   &   &   &  \\
+     \quad Regime M, complements &    &   &   &   &  \\
+     \quad Regime M, complements, ss tax only &    &   &   &   &  \\
+     \quad Regime M, complements, no tax &    &   &   &   &  \\
+     \quad Regime F, substitutes, short debt &    &   &   &   &  \\
+     \quad Regime F, substitutes, long debt &    &   &   &   &  \\
+     \quad Regime F, complements, short debt &    &   &   &   &  \\
+     \quad Regime F, complements, long debt &    &   &   &   &  \\
+     \quad Regime F, complements, short debt, ss tax only &    &   &   &   &  \\
+     \quad Regime F, complements, long debt, ss tax only &    &   &   &   &  \\
+     \quad Regime F, complements, short debt, no tax &    &   &   &   &  \\
+     \quad Regime F, complements, long debt, no tax &    &   &   &   &  \\
+    \bottomrule    
+    \end{tabular}
+    \label{tab:my_label}
+\end{table}
+
+
 
 \section{Conclusion}
 
