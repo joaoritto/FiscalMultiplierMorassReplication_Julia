@@ -11,6 +11,7 @@
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{threeparttable}
 
 \usepackage[format=default,labelsep=newline,justification=centering,width=0.95\textwidth
 ]{caption}
@@ -92,9 +93,9 @@ where $N,T$ denote the dimension of observables and the number of periods.
 
 \section{Results}
 The first tables we present show our results for the prior predictive analysis. They attempt to replicate tables 3 and 4 of LTW. The numbers tell us, for each of the model versions, what is the prior probability that the fiscal multipliers on output, consumption or investment are large, for different time horizons. Some of our numbers do not match LTW to the second decimal, but they are quite close: they tells us that in general the fiscal regime has higher multipliers and that the model that uses G in utility is more able to produce large multipliers overall than the model with non-savers.
-
 \begin{table}[H]
     \centering
+    \begin{threeparttable}
     \caption{Government Spending Output Multiplier Probabilities Implied By Prior Predictive Analysis Based on 20,000 Draws From the Prior Distribution}
     \begin{tabular}{l c c c c c}
     \toprule
@@ -104,34 +105,39 @@ The first tables we present show our results for the prior predictive analysis. 
        \midrule
      Model 1: RBC real frictions &    &   &   &   &  \\
      Model 2: New Keynesian sticky prices and wages  &    &   &   &   &       \\
-     \quad Regime M & 0.12 & 0.01 & 0.01 & 0.01 & 0.01  \\
-     \quad Regime F, short debt & 1.00 &  0.98  & 0.94 & 0.92  & 0.92  \\
-     \quad Regime F, long debt &  0.96 & 0.75 & 0.68 &  0.68  & 0.68  \\
+     \quad Regime M & 0.12** & 0.01*** & 0.01** & 0.01** & 0.01***  \\
+     \quad Regime F, short debt & 1.00*** &  0.98***  & 0.94*** & 0.92***  & 0.92***  \\
+     \quad Regime F, long debt &  0.96*** & 0.75* & 0.68** &  0.68***  & 0.68***  \\
      Model 3: New Keynesian non-savers &    &   &   &   &  \\
-     \quad Regime M &   0.58 & 0.16 & 0.06  & 0.04 & 0.04 \\
-     \quad Regime F, short debt &  1.00 &  0.99  & 0.96 & 0.95  & 0.94 \\
-     \quad Regime F, long debt &   1.00 & 0.91 & 0.80 & 0.77  & 0.76 \\
+     \quad Regime M &   0.58*** & 0.16 & 0.06***  & 0.04*** & 0.04** \\
+     \quad Regime F, short debt &  1.00*** &  0.99**  & 0.96** & 0.95***  & 0.94*** \\
+     \quad Regime F, long debt &   1.00*** & 0.91* & 0.80** & 0.77***  & 0.76*** \\
      Model 4: New Keynesian G in utility &    &   &   &   &  \\
-     \quad Regime M, substitutes &   0.01 & 0.00 & 0.00  & 0.01  & 0.01  \\
-     \quad Regime M, complements &   0.84 &  0.64 &  0.47  & 0.33  & 0.29  \\
-     \quad Regime M, complements, ss tax only &   0.84 & 0.63  & 0.48 & 0.41 & 0.40  \\
+     \quad Regime M, substitutes &   0.01** & 0.00*** & 0.00***  & 0.01**  & 0.01**  \\
+     \quad Regime M, complements &   0.84*** &  0.64* &  0.47**  & 0.33***  & 0.29***  \\
+     \quad Regime M, complements, ss tax only &   0.84** & 0.63*  & 0.48** & 0.41** & 0.40**  \\
      \quad Regime M, complements, no tax &   0.73 &  0.40 & 0.23  & 0.18 & 0.17 \\
-     \quad Regime F, substitutes, short debt &  0.43 & 0.51  & 0.68  & 0.79 & 0.81  \\
-     \quad Regime F, substitutes, long debt &  0.22  & 0.17  & 0.23 &  0.39  & 0.45 \\
-     \quad Regime F, complements, short debt &   1.00 & 1.00 & 0.99 & 0.97 & 0.97  \\
-     \quad Regime F, complements, long debt &  1.00 & 0.97  & 0.92 &  0.88 & 0.86  \\
-     \quad Regime F, complements, short debt, ss tax only &  1.00   &   1.00 & 0.99 & 0.97 & 0.97  \\
-     \quad Regime F, complements, long debt, ss tax only &  1.00 & 0.97 &  0.92 &  0.88 & 0.86\\
-     \quad Regime F, complements, short debt, no tax &  1.00 & 1.00 &  0.99 & 0.99  & 0.98 \\
-     \quad Regime F, complements, long debt, no tax &   1.00 &  0.98  & 0.95  & 0.92 & 0.91  \\
+     \quad Regime F, substitutes, short debt &  0.43*** & 0.51*  & 0.68*  & 0.79** & 0.81**  \\
+     \quad Regime F, substitutes, long debt &  0.22**  & 0.17**  & 0.23** &  0.39**  & 0.45** \\
+     \quad Regime F, complements, short debt &   1.00*** & 1.00*** & 0.99*** & 0.97*** & 0.97***  \\
+     \quad Regime F, complements, long debt &  1.00*** & 0.97**  & 0.92** &  0.88*** & 0.86***  \\
+     \quad Regime F, complements, short debt, ss tax only &  1.00***   &   1.00*** & 0.99*** & 0.97*** & 0.97***  \\
+     \quad Regime F, complements, long debt, ss tax only &  1.00*** & 0.97** &  0.92** &  0.88*** & 0.86***\\
+     \quad Regime F, complements, short debt, no tax &  1.00*** & 1.00*** &  0.99*** & 0.99***  & 0.98*** \\
+     \quad Regime F, complements, long debt, no tax &   1.00*** &  0.98**  & 0.95***  & 0.92*** & 0.91***  \\
      \midrule
     \bottomrule    
     \end{tabular}
+    \begin{tablenotes}
+    \item * stands for a difference below 0.05 relative to LTW, ** stands for a difference below 0.02, *** stands for a correct value to the second decimal
+    \end{tablenotes}
     \label{tab:PPAOutputMultipliers}
+    \end{threeparttable}
 \end{table}
 
 \begin{table}[H]
     \centering
+    \begin{threeparttable}
      \caption{Government Spending Consumption Multiplier Probabilities Implied By Prior Predictive Analysis Based on 20,000 Draws From the Prior Distribution}
     \begin{tabular}{l c c c c c}
     \toprule
@@ -141,34 +147,39 @@ The first tables we present show our results for the prior predictive analysis. 
         \midrule
      Model 1: RBC real frictions &    &   &   &   &  \\
      Model 2: New Keynesian sticky prices and wages    &    &   &   &   &  \\
-     \quad Regime M &   0.01 &  0.00  & 0.00 & 0.01 & 0.01  \\
-     \quad Regime F, short debt &  0.98 & 0.95 &  0.91  & 0.90  & 0.89  \\
-     \quad Regime F, long debt &  0.78  &  0.53 & 0.50 & 0.55 & 0.57  \\
+     \quad Regime M &   0.01** &  0.00***  & 0.00*** & 0.01** & 0.01***  \\
+     \quad Regime F, short debt &  0.98*** & 0.95** &  0.91**  & 0.90***  & 0.89***  \\
+     \quad Regime F, long debt &  0.78**  &  0.53* & 0.50** & 0.55*** & 0.57**  \\
      Model 3: New Keynesian non-savers &    &   &   &   &  \\
-     \quad Regime M &  0.49 &  0.16 & 0.08 & 0.05 & 0.04 \\
-     \quad Regime F, short debt &  1.00 & 0.99  & 0.97 &  0.95 &  0.94 \\
-     \quad Regime F, long debt &  0.99 &  0.89  & 0.81 & 0.76  & 0.73  \\
+     \quad Regime M &  0.49** &  0.16* & 0.08** & 0.05*** & 0.04*** \\
+     \quad Regime F, short debt &  1.00*** & 0.99***  & 0.97** &  0.95** &  0.94** \\
+     \quad Regime F, long debt &  0.99*** &  0.89*  & 0.81** & 0.76**  & 0.73**  \\
      Model 4: New Keynesian G in utility &    &   &   &   &  \\
-     \quad Regime M, substitutes &  0.00 &  0.00 & 0.00 & 0.00 & 0.00  \\
-     \quad Regime M, complements &   0.82  & 0.73  & 0.69 & 0.60  & 0.50 \\
-     \quad Regime M, complements, ss tax only & 0.82 & 0.71 &  0.67 & 0.60 & 0.55  \\
+     \quad Regime M, substitutes &  0.00*** &  0.00*** & 0.00*** & 0.00*** & 0.00***  \\
+     \quad Regime M, complements &   0.82**  & 0.73**  & 0.69** & 0.60**  & 0.50** \\
+     \quad Regime M, complements, ss tax only & 0.82*** & 0.71* &  0.67* & 0.60* & 0.55*  \\
      \quad Regime M, complements, no tax &  0.76  & 0.57  & 0.46 & 0.30  & 0.24  \\
-     \quad Regime F, substitutes, short debt & 0.31 & 0.27  & 0.30  & 0.50 & 0.60  \\
-     \quad Regime F, substitutes, long debt &   0.12 & 0.06  & 0.06 & 0.13  & 0.20  \\
-     \quad Regime F, complements, short debt &  1.00 &  1.00 & 0.99  & 0.99 & 0.98  \\
-     \quad Regime F, complements, long debt &  0.99 & 0.96  & 0.94 & 0.92  &  0.90 \\
-     \quad Regime F, complements, short debt, ss tax only &  1.00 &  1.00 &  0.99 & 0.99 & 0.98 \\
-     \quad Regime F, complements, long debt, ss tax only &  0.99  & 0.96 & 0.94 & 0.92  & 0.90 \\
-     \quad Regime F, complements, short debt, no tax &  1.00 & 1.00 &  1.00 & 0.99 & 0.99 \\
-     \quad Regime F, complements, long debt, no tax &    1.00  & 0.98  & 0.97 & 0.95 & 0.94 \\
+     \quad Regime F, substitutes, short debt & 0.31** & 0.27***  & 0.30**  & 0.50** & 0.60**  \\
+     \quad Regime F, substitutes, long debt &   0.12** & 0.06**  & 0.06*** & 0.13***  & 0.20**  \\
+     \quad Regime F, complements, short debt &  1.00*** &  1.00*** & 0.99***  & 0.99*** & 0.98***  \\
+     \quad Regime F, complements, long debt &  0.99*** & 0.96**  & 0.94*** & 0.92***  &  0.90*** \\
+     \quad Regime F, complements, short debt, ss tax only &  1.00*** &  1.00*** &  0.99*** & 0.99*** & 0.98*** \\
+     \quad Regime F, complements, long debt, ss tax only &  0.99***  & 0.96** & 0.94*** & 0.92**  & 0.90*** \\
+     \quad Regime F, complements, short debt, no tax &  1.00*** & 1.00*** &  1.00*** & 0.99*** & 0.99*** \\
+     \quad Regime F, complements, long debt, no tax &    1.00***  & 0.98***  & 0.97*** & 0.95** & 0.94*** \\
     \bottomrule    
     \end{tabular}
+    \begin{tablenotes}
+    \item * stands for a difference below 0.05 relative to LTW, ** stands for a difference below 0.02, *** stands for a correct value to the second decimal
+    \end{tablenotes}
     \label{tab:my_label}
+    \end{threeparttable}
 \end{table}
 
 
 \begin{table}[H]
     \centering
+    \begin{threeparttable}
     \caption{Government Spending Investment Multiplier Probabilities Implied By Prior Predictive Analysis Based on 20,000 Draws From the Prior Distribution}
     \begin{tabular}{l c c c c c}
     \toprule
@@ -178,29 +189,33 @@ The first tables we present show our results for the prior predictive analysis. 
         \midrule
      Model 1: RBC real frictions &    &   &   &   &  \\
      Model 2: New Keynesian sticky prices and wages   &    &   &   &   &   \\
-     \quad Regime M &  0.01 &  0.01 & 0.01  & 0.01 &  0.01 \\
-     \quad Regime F, short debt &   0.96 &  0.87 & 0.82 & 0.81  & 0.81 \\
-     \quad Regime F, long debt &  0.63 & 0.50 & 0.50 & 0.56 & 0.57  \\
+     \quad Regime M &  0.01** &  0.01** & 0.01**  & 0.01** &  0.01** \\
+     \quad Regime F, short debt &   0.96*** &  0.87** & 0.82*** & 0.81*** & 0.81*** \\
+     \quad Regime F, long debt &  0.63** & 0.50*** & 0.50*** & 0.56** & 0.57***  \\
      Model 3: New Keynesian non-savers &    &   &   &   &  \\
-     \quad Regime M &  0.01 &  0.01 & 0.01 & 0.01  & 0.01 \\
-     \quad Regime F, short debt &  0.91 & 0.78 & 0.73 & 0.73 & 0.73  \\
-     \quad Regime F, long debt &   0.43  &  0.31 & 0.35 & 0.43  & 0.45 \\
+     \quad Regime M &  0.01** &  0.01** & 0.01** & 0.01**  & 0.01*** \\
+     \quad Regime F, short debt &  0.91*** & 0.78* & 0.73** & 0.73** & 0.73**  \\
+     \quad Regime F, long debt &   0.43***  &  0.31** & 0.35** & 0.43***  & 0.45** \\
      Model 4: New Keynesian G in utility &    &   &   &   &  \\
-     \quad Regime M, substitutes &   0.36 & 0.30 & 0.19 & 0.07 & 0.05  \\
-     \quad Regime M, complements &   0.01  & 0.00  & 0.01  & 0.01  & 0.01  \\
-     \quad Regime M, complements, ss tax only &  0.05 &  0.04  & 0.04 & 0.04  & 0.05  \\
-     \quad Regime M, complements, no tax &   0.03 & 0.02 &  0.02  & 0.02  & 0.02 \\
-     \quad Regime F, substitutes, short debt &   0.99 &  0.98 & 0.96  & 0.96  & 0.96 \\
-     \quad Regime F, substitutes, long debt &   0.94 &  0.90 &  0.89 & 0.89 & 0.90 \\
-     \quad Regime F, complements, short debt &  0.67 & 0.54  &  0.54 & 0.59 & 0.60  \\
-     \quad Regime F, complements, long debt &   0.19 & 0.12 & 0.14 & 0.22  & 0.25 \\
-     \quad Regime F, complements, short debt, ss tax only &  0.67 & 0.53 & 0.54  & 0.58 & 0.59 \\
-     \quad Regime F, complements, long debt, ss tax only &  0.20  & 0.13 & 0.15  & 0.23  &  0.26 \\
-     \quad Regime F, complements, short debt, no tax &  0.92 & 0.81   & 0.76  & 0.75  & 0.75 \\
-     \quad Regime F, complements, long debt, no tax &   0.43 & 0.35 & 0.37  & 0.43 & 0.45 \\
+     \quad Regime M, substitutes &   0.36** & 0.30** & 0.19** & 0.07*** & 0.05**  \\
+     \quad Regime M, complements &   0.01**  & 0.00***  & 0.01**  & 0.01**  & 0.01***  \\
+     \quad Regime M, complements, ss tax only &  0.05* &  0.04*  & 0.04* & 0.04*  & 0.05*  \\
+     \quad Regime M, complements, no tax &   0.03* & 0.02** &  0.02**  & 0.02**  & 0.02*** \\
+     \quad Regime F, substitutes, short debt &   0.99** &  0.98*** & 0.96***  & 0.96***  & 0.96*** \\
+     \quad Regime F, substitutes, long debt &   0.94*** &  0.90** &  0.89*** & 0.89*** & 0.90** \\
+     \quad Regime F, complements, short debt &  0.67*** & 0.54**  &  0.54** & 0.59** & 0.60**  \\
+     \quad Regime F, complements, long debt &   0.19*** & 0.12** & 0.14*** & 0.22***  & 0.25** \\
+     \quad Regime F, complements, short debt, ss tax only &  0.67*** & 0.53** & 0.54**  & 0.58*** & 0.59*** \\
+     \quad Regime F, complements, long debt, ss tax only &  0.20**  & 0.13*** & 0.15**  & 0.23**  &  0.26*** \\
+     \quad Regime F, complements, short debt, no tax &  0.92*** & 0.81**   & 0.76***  & 0.75***  & 0.75*** \\
+     \quad Regime F, complements, long debt, no tax &   0.43*** & 0.35*** & 0.37**  & 0.43*** & 0.45** \\
     \bottomrule    
     \end{tabular}
+    \begin{tablenotes}
+    \item * stands for a difference below 0.05 relative to LTW, ** stands for a difference below 0.02, *** stands for a correct value to the second decimal
+    \end{tablenotes}
     \label{tab:my_label}
+    \end{threeparttable}
 \end{table}
 
 
