@@ -20,3 +20,10 @@ cd(path) # go to the current directory
 save("file/PriorPredictiveN20000_model4.jld","OutMul",
 Table_y, "ConsMul", Table_c,
 "InvMul",Table_i) # save in the folder (I created a folder "file")
+
+multipliers_y10,multipliers_y90,multipliers_y50,multipliers_c10,multipliers_c90,multipliers_c50,multipliers_i10,multipliers_i90,multipliers_i50=figure1(N,path)
+
+x=1:41
+y=[multiplier_y10;multiplier_y90;multiplier_y50]
+
+plot(x,y)
