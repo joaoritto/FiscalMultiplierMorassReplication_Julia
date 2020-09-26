@@ -254,6 +254,12 @@ function linearizedmodel(calibpara,estimpara,regime,path)
     τK=calibpara[10]
     τL=calibpara[11]
     τC=calibpara[12]
+    
+    if η_p==0
+        RBCmodel=1
+    else
+        RBCmodel=0
+    end
 
     γ=estimpara[1]
     ξ=estimpara[2]
@@ -449,15 +455,24 @@ function linearizedmodel(calibpara,estimpara,regime,path)
 
     # 6. Euler equation
     Γ_0[euler_eq,EλS_var]=-1
-    Γ_0[euler_eq,Eπ_var]=1
     Γ_0[euler_eq,Eua_var]=1
+    if RBCmodel==1
+        Γ_0[euler_eq,rr_var]=-1
+    else
+        Γ_0[euler_eq,Eπ_var]=1
+        Γ_0[euler_eq,R_var]=-1
+    end
     Γ_0[euler_eq,λS_var]=1
-    Γ_0[euler_eq,R_var]=-1
+    
 
     # 7. Maturity Structure of Debt
     Γ_0[maturitystructuredebt_eq,EPB_var]=-ρ/R
     Γ_0[maturitystructuredebt_eq,PB_var]=1
-    Γ_0[maturitystructuredebt_eq,R_var]=1
+    if RBCmodel==1
+        Γ_0[maturitystructuredebt_eq,rr_var]=1
+    else
+        Γ_0[maturitystructuredebt_eq,R_var]=1
+    end
 
     # 8. Household FOC for capacity utilization
     Γ_0[hhfoccapacityutilization_eq,rk_var]=1
@@ -507,7 +522,11 @@ function linearizedmodel(calibpara,estimpara,regime,path)
     Γ_0[nonsaversbudgetconstraint_eq,z_var]=-z
 
     # 14. Wage equation
-    κ_w=((1-β*ω_w)*(1-ω_w))/(ω_w*(1+β)*(1+(((1+η_w)*ξ)/η_w)))
+    if RBCmodel==1
+        κ_w=0
+    else
+        κ_w=((1-β*ω_w)*(1-ω_w))/(ω_w*(1+β)*(1+(((1+η_w)*ξ)/η_w)))
+    end
 
     Γ_0[wage_eq,Ew_var]=-β/(1+β)
     Γ_0[wage_eq,Eπ_var]=-β/(1+β)
@@ -546,7 +565,9 @@ function linearizedmodel(calibpara,estimpara,regime,path)
     Γ_0[governmentbudgetconstraint_eq,L_var]=τL*w*(L/y)
     Γ_0[governmentbudgetconstraint_eq,τC_var]=τC*(c/y)
     Γ_0[governmentbudgetconstraint_eq,c_var]=τC*(c/y)
-    Γ_0[governmentbudgetconstraint_eq,π_var]=(1/β)*(by)
+    if RBCmodel==0
+        Γ_0[governmentbudgetconstraint_eq,π_var]=(1/β)*(by)
+    end
     Γ_0[governmentbudgetconstraint_eq,ua_var]=(1/β)*(by)
     Γ_0[governmentbudgetconstraint_eq,PB_var]=-(by)*(ρ/exp(γ))
     Γ_0[governmentbudgetconstraint_eq,g_var]=-(gy)
@@ -787,9 +808,13 @@ function linearizedmodel(calibpara,estimpara,regime,path)
     Γ_0[fedfundsobservable_eq,R_var]=-100
 
     # 49. Fisher equation
-    Γ_0[fisher_eq,rr_var]=1
-    Γ_0[fisher_eq,R_var]=-1
-    Γ_0[fisher_eq,Eπ_var]=1
+    if RBCmodel==1
+        Γ_0[fisher_eq,π_var]=1
+    else
+        Γ_0[fisher_eq,rr_var]=1
+        Γ_0[fisher_eq,R_var]=-1
+        Γ_0[fisher_eq,Eπ_var]=1
+    end
 
 
     return Γ_0, Γ_1, constant, Ψ, Π
