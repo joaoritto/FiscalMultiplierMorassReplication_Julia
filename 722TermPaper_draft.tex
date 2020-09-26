@@ -53,6 +53,20 @@ Since the package ``Distribution.jl'' contains this density function, we can dra
 
 
 \subsubsection*{Solving the Model}
+To solve the model we use the method developed by Chris Sims to solve Linear Rational Expectations Models. We use the log-linearized equations provided in the appendix of LTW and write the matrices to have our system of equations in the form $\Gamma_0 y_{t}=\Gamma_1 y_{t-1}+Const+\Psi z_t+\Pi \eta_t$ where $z_t$ are the innovations and $\eta_t$ are expectation errors. These matrices are then used to get a backward-looking solution to the model $y_t=\Theta y_{t-1}+ \Phi z_t$, which we use as the transition equation for our model in state space form combined with an observables equation which is easy to define. 
+
+For "gensys", the code that solves the model, we found an online version of it for Julia. This version, however, had been written for the version v 0.4 of Julia, which is not the most recent. Hence, we had to modify their code as a lot of the functions used had changed syntax in the more recent Julia versions.
+
+We apply the different model restrictions by having a function which takes the model type and imposes the relevant restrictions before inputting the parameter vector into our function that solves the model.
+
+\subsubsection{Multipliers}
+We follow LTW's description of the multipliers to compute these once we have drawed a parameter vector from the prior and solved the model.
+
+\subsection{Bayesian Estimation of the Model}
+We estimate the model using the Random Walk Metropolis Hastings. To do so, we initialize the procedure using the mean and inverse hessian mode that we took from LTW.
+
+\subsubsection*{Data}
+Following LTW, we use the US data from 1955:I to 2007:IV to focus in the pre-financial crisis periods. The data is contained in the file ``data.mat'' from their replication folder. There are 8 variables: $[C, I, w, GC, B, L, Pi, R]$ (log differences of aggregate consumption, investment, real wages, real government consumption, the real market-value of government debt, log hours worked, the GDP deflator, and the federal funds rate).
 
 \subsubsection*{Kalman Filter}
 Running the Kalman filter and evaluating the likelihood of the parameters given the data is standard. We follow the following notation:
@@ -74,6 +88,11 @@ with the proper initialization. Finally, the likelihood is given by:
 \end{align*}
 where $N,T$ denote the dimension of observables and the number of periods.
 
-\subsubsection*{Data}
-Following LTW, we use the US data from 1955:I to 2007:IV to focus in the pre-financial crisis periods. The data is contained in the file ``data.mat'' from their replication folder. There are 8 variables: $[C, I, w, GC, B, L, Pi, R]$ (log differences of aggregate consumption, investment, real wages, real government consumption, the real market-value of government debt, log hours worked, the GDP deflator, and the federal funds rate).
+\subsubsection{Random Walk Metropolis Hastings}
+
+\section{Results}
+
+\section{Conclusion}
+
+
 \end{document}
