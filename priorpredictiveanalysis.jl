@@ -72,28 +72,28 @@ end
 
 function figure1(N,path)
     Models=["5.1";"3.1";"3.4"]
-    
+
     horizon=41
- 
-    
-    multipliers_y5=zeros(length(Models),horizon)
-    multipliers_y95=zeros(length(Models),horizon)
+
+
+    multipliers_y10=zeros(length(Models),horizon)
+    multipliers_y90=zeros(length(Models),horizon)
     multipliers_y50=zeros(length(Models),horizon)
-    multipliers_c5=zeros(length(Models),horizon)
-    multipliers_c95=zeros(length(Models),horizon)
+    multipliers_c10=zeros(length(Models),horizon)
+    multipliers_c90=zeros(length(Models),horizon)
     multipliers_c50=zeros(length(Models),horizon)
-    multipliers_i5=zeros(length(Models),horizon)
-    multipliers_i95=zeros(length(Models),horizon)
+    multipliers_i10=zeros(length(Models),horizon)
+    multipliers_i90=zeros(length(Models),horizon)
     multipliers_i50=zeros(length(Models),horizon)
 
     for ind in 1:length(Models)
         model=Models[ind]
         outputmultiplier,consumptionmultiplier,investmentmultiplier=PriorPredictiveAnalysis(model,N,path)
-        
+
         multipliers_y=zeros(horizon,N)
         multipliers_c=zeros(horizon,N)
         multipliers_i=zeros(horizon,N)
-        
+
         for i in 1:N
             for j in 1:horizon
                 multipliers_y[j,i]=outputmultiplier[i][j]
@@ -103,17 +103,66 @@ function figure1(N,path)
         end
 
         for j in 1:horizon
-            multipliers_y5[ind,j]=quantile(multipliers_y[j,:],0.1)
-            multipliers_y95[ind,j]=quantile(multipliers_y[j,:],0.9)
+            multipliers_y10[ind,j]=quantile(multipliers_y[j,:],0.1)
+            multipliers_y90[ind,j]=quantile(multipliers_y[j,:],0.9)
             multipliers_y50[ind,j]=quantile(multipliers_y[j,:],0.5)
-            multipliers_c5[ind,j]=quantile(multipliers_c[j,:],0.1)
-            multipliers_c95[ind,j]=quantile(multipliers_c[j,:],0.9)
+            multipliers_c10[ind,j]=quantile(multipliers_c[j,:],0.1)
+            multipliers_c90[ind,j]=quantile(multipliers_c[j,:],0.9)
             multipliers_c50[ind,j]=quantile(multipliers_c[j,:],0.5)
-            multipliers_i5[ind,j]=quantile(multipliers_i[j,:],0.1)
-            multipliers_i95[ind,j]=quantile(multipliers_i[j,:],0.9)
+            multipliers_i10[ind,j]=quantile(multipliers_i[j,:],0.1)
+            multipliers_i90[ind,j]=quantile(multipliers_i[j,:],0.9)
             multipliers_i50[ind,j]=quantile(multipliers_i[j,:],0.5)
         end
     end
 
-    return multipliers_y5,multipliers_y95,multipliers_y50,multipliers_c5,multipliers_c95,multipliers_c50,multipliers_i5,multipliers_i95,multipliers_i50
+    return multipliers_y10,multipliers_y90,multipliers_y50,multipliers_c10,multipliers_c90,multipliers_c50,multipliers_i10,multipliers_i90,multipliers_i50
+end
+
+
+function figure2(N,path)
+    Models=["5.2";"3.3";"3.5"]
+
+    horizon=41
+
+
+    multipliers_y10=zeros(length(Models),horizon)
+    multipliers_y90=zeros(length(Models),horizon)
+    multipliers_y50=zeros(length(Models),horizon)
+    multipliers_c10=zeros(length(Models),horizon)
+    multipliers_c90=zeros(length(Models),horizon)
+    multipliers_c50=zeros(length(Models),horizon)
+    multipliers_i10=zeros(length(Models),horizon)
+    multipliers_i90=zeros(length(Models),horizon)
+    multipliers_i50=zeros(length(Models),horizon)
+
+    for ind in 1:length(Models)
+        model=Models[ind]
+        outputmultiplier,consumptionmultiplier,investmentmultiplier=PriorPredictiveAnalysis(model,N,path)
+
+        multipliers_y=zeros(horizon,N)
+        multipliers_c=zeros(horizon,N)
+        multipliers_i=zeros(horizon,N)
+
+        for i in 1:N
+            for j in 1:horizon
+                multipliers_y[j,i]=outputmultiplier[i][j]
+                multipliers_c[j,i]=consumptionmultiplier[i][j]
+                multipliers_i[j,i]=investmentmultiplier[i][j]
+            end
+        end
+
+        for j in 1:horizon
+            multipliers_y10[ind,j]=quantile(multipliers_y[j,:],0.1)
+            multipliers_y90[ind,j]=quantile(multipliers_y[j,:],0.9)
+            multipliers_y50[ind,j]=quantile(multipliers_y[j,:],0.5)
+            multipliers_c10[ind,j]=quantile(multipliers_c[j,:],0.1)
+            multipliers_c90[ind,j]=quantile(multipliers_c[j,:],0.9)
+            multipliers_c50[ind,j]=quantile(multipliers_c[j,:],0.5)
+            multipliers_i10[ind,j]=quantile(multipliers_i[j,:],0.1)
+            multipliers_i90[ind,j]=quantile(multipliers_i[j,:],0.9)
+            multipliers_i50[ind,j]=quantile(multipliers_i[j,:],0.5)
+        end
+    end
+
+    return multipliers_y10,multipliers_y90,multipliers_y50,multipliers_c10,multipliers_c90,multipliers_c50,multipliers_i10,multipliers_i90,multipliers_i50
 end
