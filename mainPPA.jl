@@ -11,7 +11,7 @@ include(path*"modelrestrictions.jl")
 include(path*"priorpredictiveanalysis.jl")
 #include(path*"Kalman.jl")
 
-N=20000
+N=10
 
 cd(path) # go to the current directory
 
@@ -23,12 +23,12 @@ cd(path) # go to the current directory
 #Table_y, "ConsMul", Table_c,
 #"InvMul",Table_i) # save in the folder (I created a folder "file")
 
-multipliers_y10,multipliers_y90,multipliers_y50,multipliers_c10,multipliers_c90,multipliers_c50,multipliers_i10,multipliers_i90,multipliers_i50=figure1(N,path)
+multipliers_y5,multipliers_y95,multipliers_y50,multipliers_c5,multipliers_c95,multipliers_c50,multipliers_i5,multipliers_i95,multipliers_i50=figure2(N,path)
 
 x=0:40
-y=[multipliers_y10' multipliers_y90' multipliers_y50']
-c=[multipliers_c10' multipliers_c90' multipliers_c50']
-i=[multipliers_i10' multipliers_i90' multipliers_i50']
+y=[multipliers_y5' multipliers_y95' multipliers_y50']
+c=[multipliers_c5' multipliers_c95' multipliers_c50']
+i=[multipliers_i5' multipliers_i95' multipliers_i50']
 
 p1=plot(x,y,title="Panel A: Output multiplier",titlefontsize=7,legend=false,linestyle=[:solid :dash :dashdot :solid :dash :dashdot :solid :dash :dashdot],lc=[:black :red :blue :black :red :blue :black :red :blue])
 p2=plot(x,c,title="Panel B: Consumption multiplier",titlefontsize=7,legend=false,linestyle=[:solid :dash :dashdot :solid :dash :dashdot :solid :dash :dashdot],lc=[:black :red :blue :black :red :blue :black :red :blue])
