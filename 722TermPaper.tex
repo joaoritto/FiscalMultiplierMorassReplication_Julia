@@ -27,7 +27,7 @@
 
 \section{Introduction}
 
-In this term paper we wanted to work with the model developed in Leeper et al. (2017) (LTW, henceforth) for a variety of reasons. Firstly, the topic of the effects of Fiscal Policy seemed to us an interesting and far from settled, hence studying this model could help us get better acquainted with the literature and how to potentially tackle questions about fiscal multipliers under different settings. Secondly, the fact that the model is reasonably large made our task challenging in a good way, allowing us to to take a large step in the learning curve of DSGE estimation. Thirdly, we thought about specific things that would be interesting to do with this model, once we had replicated the paper's work.
+In this term paper we wanted to work with the model developed in Leeper et al. (2017) (LTW, henceforth) for a variety of reasons. Firstly, the topic of the effects of Fiscal Policy seemed to us interesting and far from settled, hence studying this model could help us get better acquainted with the literature and how to potentially tackle questions about fiscal multipliers under different settings. Secondly, the fact that the model is reasonably large made our task challenging in a good way, allowing us to to take a develop our DSGE estimation skills more thoroughly. Thirdly, we thought about specific things that would be interesting to do with this model, once we had replicated the paper's work.
 
 The last of these reasons proved to be part of an overly ambitious and somewhat optimistic plan. Unfortunately, the replicating process proved itself a lot more cumbersome than we had expected, leaving us no time to go further. However, a brighter reading of this is that we ended up learning a lot more than we initially thought was needed for the replication of the paper.
 
@@ -37,7 +37,7 @@ In the section that follows we discuss our implementation. Section 3 presents th
 
 \section{Implementation}
 
-Our code is publicly available in github: https://github.com/joaoritto/722TermPaper.git
+Our code is publicly available on github: https://github.com/joaoritto/722TermPaper.git
 
 \subsection{Prior Predictive Analysis}
 
@@ -92,12 +92,12 @@ with the proper initialization. Finally, the likelihood is given by:
 where $N,T$ denote the dimension of observables and the number of periods.
 
 \subsubsection*{Random Walk Metropolis Hastings}
-As LTW, we use the Random Walk Metropolis Hastings. We initialize it using their mode and inverse hessian mode. As part of the initialization we start with a step of c=1 to get the initial draw, after this we use c=0.28 in the main part of the algorithm (these values are the same ones used by LTW). We run only 100,000 draws, instead of 1,500,000 due to computational constraints.
+As LTW, we use the Random Walk Metropolis Hastings. We initialize it using their mode and inverse hessian mode. As part of the initialization we start with a step of c=1 to get the initial draw, after this we use c=0.28 in the main part of the algorithm (these values are the same ones used by LTW). We run only 100,000 draws, instead of 1,500,000 due to computational constraints and for the moments we present in our tables we discard the first 5000 draws.
 
 \section{Results}
 The first 3 tables we present show our results for the prior predictive analysis. They attempt to replicate tables 3 and 4 of LTW. The numbers tell us, for each of the model versions, what is the prior probability that the fiscal multipliers on output, consumption or investment are large, for different time horizons. Some of our numbers do not match LTW to the second decimal, but they are quite close. We use stars in our tables to denote how our results compare to LTW, as is easily seen we our replication is quite close to theirs, with the exception of model 4, regime M, complements with no taxes. It was unclear to us which restrictions are different in their work relative to the ones we imposed that could explain those divergences.
 
-Below the tables we replicate figure 1.
+Below the tables we replicate figures 1 and 2.
 
 
 \begin{table}[H]
@@ -244,7 +244,7 @@ agents, steady-state taxes only, long debt (dotted-dashed lines) }
     \label{fig:my_label}
 \end{figure}
 
-The tables that follow reproduce tables 5, 7 and 8 of LTW, presenting our results for the bayesian estimation of the model.
+The tables that follow reproduce tables 5, 7 and 8 of LTW, presenting our results for the bayesian estimation of the model. Obviously our results here are a bit less close to LTW given the significantly larger number of draws that they did. Overall, we find our results to have the same type of messages and our IRFs, which we plot below the tables, look satisfactorily similar to theirs.
 
 %% Counterpart of Table 5
 \begin{table}[H]
