@@ -17,14 +17,16 @@ include(path*"RWMH.jl")
 ## Load Parameter Draws
 RWMHDataF  = load("file/RWMH_Fdraws.jld")
 DataFarray = RWMHDataF["ParaF"]
-Nsample    = 20_000
+Nsample    = 10_000
 FreqUse    = Int(floor(size(DataFarray,2)/ Nsample) -1)
 DrawUseF   = [Vector(DataFarray[:,5000+(ii+1)*FreqUse]) for ii in 1:Nsample]
+# DrawUseF   = [Vector(DataFarray[:,(ii)*FreqUse]) for ii in 1:Nsample]
 
 # Monetary Regime
 RWMHDataM  = load("MH100000_regimeM.jld")
 DataMarray = RWMHDataM["Para"]
 DrawUseM   = [DataMarray[5000+(ii+1)*FreqUse] for ii in 1:Nsample]
+# DrawUseM   = [DataMarray[(ii)*FreqUse] for ii in 1:Nsample]
 
 
 ## Implement
@@ -35,29 +37,12 @@ model="5.2"
 @time y_F,c_F,i_F,R_F,π_F,rr_F,b_F,w_F,L_F=IRFs(model,DrawUseF,path)
 
 # Save the Results
-save("file/IRF_M_N20000.jld","y_M",y_M,"c_M",c_M,"i_M",i_M,
+save("file/IRF_M_N10000.jld","y_M",y_M,"c_M",c_M,"i_M",i_M,
     "R_M",R_M,"π_M",π_M,"rr_M",rr_M,"b_M",b_M,"w_M",w_M,"L_M",L_M)
 
-save("file/IRF_F_N20000.jld","y_F",y_F,"c_F",c_F,"i_F",i_F,
+save("file/IRF_F_N10000.jld","y_F",y_F,"c_F",c_F,"i_F",i_F,
         "R_F",R_F,"π_F",π_F,"rr_F",rr_F,"b_F",b_F,"w_F",w_F,"L_F",L_F)
 
-## Fix IRF_b
-# Regime M
-    horizon=80+1
-    b_IRFintervalM=zeros(horizon,3)
-    b_IRFintervalF=zeros(horizon,3)
-
-    for j in 1:horizon
-        # Regime M
-        b_IRFintervalM[j,1]=quantile(b_M[j,:],0.05)
-        b_IRFintervalM[j,2]=quantile(b_M[j,:],0.95)
-        b_IRFintervalM[j,3]=mean(b_M[j,:])
-
-        # Regime F
-        b_IRFintervalF[j,1]=quantile(b_F[j,:],0.05)
-        b_IRFintervalF[j,2]=quantile(b_F[j,:],0.95)
-        b_IRFintervalF[j,3]=mean(b_F[j,:])
-    end
 
 
 y=[y_M y_F]
@@ -66,7 +51,7 @@ i=[i_M i_F]
 R=[R_M R_F]
 π=[π_M π_F]
 rr=[rr_M rr_F]
-b=[b_IRFintervalM b_IRFintervalF]
+b=[b_M b_F]
 w=[w_M w_F]
 L=[L_M L_F]
 
@@ -83,7 +68,7 @@ p9=plot(x,L,title="Panel K: Labor",titlefontsize=7,legend=false,linestyle=[:dot 
 
 finalplot=plot(p1,p2,p3,p4,p5,p6,p7,p8,p9,layout=(3,3))
 
-savefig(path*"file/plotIRFs_N20000_ver2.png")
+savefig(path*"file/plotIRFs_N10000.png")
 
 function IRFs(model,para_drawn,path)
     # Apply the function "modelrestrictions"
@@ -148,7 +133,7 @@ function IRFs(model,para_drawn,path)
             R_IRF[j,i]=4*X[R_var,j]*10000
             π_IRF[j,i]=4*X[π_var,j]*10000
             rr_IRF[j,i]=4*X[rr_var,j]*10000
-            b_IRF[j,i]=X[b_var,j]-X[y_var,j]*100
+            b_IRF[j,i]=(X[b_var,j]-X[y_var,j])*100
             #LRπ_IRF[j,i]=0
             #LRrr_IRF[j,i]=0
             w_IRF[j,i]=X[w_var,j]*100
@@ -198,6 +183,6 @@ function IRFs(model,para_drawn,path)
         L_IRFinterval[j,3]=mean(L_IRF[j,:])
     end
 
-    return ymultiplier_IRFinterval,cmultiplier_IRFinterval,imultiplier_IRFinterval,R_IRFinterval,π_IRFinterval,rr_IRFinterval,b_IRF,w_IRFinterval,L_IRFinterval
+    return ymultiplier_IRFinterval,cmultiplier_IRFinterval,imultiplier_IRFinterval,R_IRFinterval,π_IRFinterval,rr_IRFinterval,b_IRFinterval,w_IRFinterval,L_IRFinterval
 
 end
