@@ -8,8 +8,6 @@ using Statistics, LinearAlgebra, Distributions, SparseArrays, JLD, Plots
 include(path*"model.jl")
 include(path*"PVmultiplier.jl")
 include(path*"prior.jl")
-include(path*"model.jl")
-include(path*"PVmultiplier.jl")
 include(path*"modelrestrictions.jl")
 include(path*"priorpredictiveanalysis.jl")
 include(path*"Kalman.jl")
@@ -19,22 +17,48 @@ include(path*"RWMH.jl")
 ## Load Parameter Draws
 RWMHDataF  = load("file/RWMH_Fdraws.jld")
 DataFarray = RWMHDataF["ParaF"]
-Nsample    = 100
+Nsample    = 20_000
 FreqUse    = Int(floor(size(DataFarray,2)/ Nsample) -1)
-DrawUseF   = [Vector(DataFarray[:,(ii+1)*FreqUse]) for ii in 1:Nsample-1]
+DrawUseF   = [Vector(DataFarray[:,5000+(ii+1)*FreqUse]) for ii in 1:Nsample]
 
 # Monetary Regime
 RWMHDataM  = load("MH100000_regimeM.jld")
 DataMarray = RWMHDataM["Para"]
-DrawUseM   = [DataMarray[(ii+1)*FreqUse] for ii in 1:Nsample-1]
+DrawUseM   = [DataMarray[5000+(ii+1)*FreqUse] for ii in 1:Nsample]
 
 
-
+## Implement
 model="5.1"
 @time y_M,c_M,i_M,R_M,π_M,rr_M,b_M,w_M,L_M=IRFs(model,DrawUseM,path)
 
 model="5.2"
 @time y_F,c_F,i_F,R_F,π_F,rr_F,b_F,w_F,L_F=IRFs(model,DrawUseF,path)
+
+# Save the Results
+save("file/IRF_M_N20000.jld","y_M",y_M,"c_M",c_M,"i_M",i_M,
+    "R_M",R_M,"π_M",π_M,"rr_M",rr_M,"b_M",b_M,"w_M",w_M,"L_M",L_M)
+
+save("file/IRF_F_N20000.jld","y_F",y_F,"c_F",c_F,"i_F",i_F,
+        "R_F",R_F,"π_F",π_F,"rr_F",rr_F,"b_F",b_F,"w_F",w_F,"L_F",L_F)
+
+## Fix IRF_b
+# Regime M
+    horizon=80+1
+    b_IRFintervalM=zeros(horizon,3)
+    b_IRFintervalF=zeros(horizon,3)
+
+    for j in 1:horizon
+        # Regime M
+        b_IRFintervalM[j,1]=quantile(b_M[j,:],0.05)
+        b_IRFintervalM[j,2]=quantile(b_M[j,:],0.95)
+        b_IRFintervalM[j,3]=mean(b_M[j,:])
+
+        # Regime F
+        b_IRFintervalF[j,1]=quantile(b_F[j,:],0.05)
+        b_IRFintervalF[j,2]=quantile(b_F[j,:],0.95)
+        b_IRFintervalF[j,3]=mean(b_F[j,:])
+    end
+
 
 y=[y_M y_F]
 c=[c_M c_F]
@@ -42,7 +66,7 @@ i=[i_M i_F]
 R=[R_M R_F]
 π=[π_M π_F]
 rr=[rr_M rr_F]
-b=[b_M b_F]
+b=[b_IRFintervalM b_IRFintervalF]
 w=[w_M w_F]
 L=[L_M L_F]
 
@@ -59,7 +83,7 @@ p9=plot(x,L,title="Panel K: Labor",titlefontsize=7,legend=false,linestyle=[:dot 
 
 finalplot=plot(p1,p2,p3,p4,p5,p6,p7,p8,p9,layout=(3,3))
 
-savefig(path*"file/plotIRFs.png")
+savefig(path*"file/plotIRFs_N20000_ver2.png")
 
 function IRFs(model,para_drawn,path)
     # Apply the function "modelrestrictions"
@@ -121,14 +145,14 @@ function IRFs(model,para_drawn,path)
             ymultiplier_IRF[j,i]=outputmultiplier[j]
             cmultiplier_IRF[j,i]=consumptionmultiplier[j]
             imultiplier_IRF[j,i]=investmentmultiplier[j]
-            R_IRF[j,i]=4*X[R_var,j]
-            π_IRF[j,i]=4*X[π_var,j]
-            rr_IRF[j,i]=4*X[rr_var,j]
-            b_IRF[j,i]=X[b_var,j]-X[y_var,j]
+            R_IRF[j,i]=4*X[R_var,j]*10000
+            π_IRF[j,i]=4*X[π_var,j]*10000
+            rr_IRF[j,i]=4*X[rr_var,j]*10000
+            b_IRF[j,i]=X[b_var,j]-X[y_var,j]*100
             #LRπ_IRF[j,i]=0
             #LRrr_IRF[j,i]=0
-            w_IRF[j,i]=X[w_var,j]
-            L_IRF[j,i]=X[L_var,j]
+            w_IRF[j,i]=X[w_var,j]*100
+            L_IRF[j,i]=X[L_var,j]*100
             #PS_IRF[j,i]=0
         end
     end

@@ -103,14 +103,14 @@ function figure1(N,path)
         end
 
         for j in 1:horizon
-            multipliers_y10[ind,j]=quantile(multipliers_y[j,:],0.05)
-            multipliers_y90[ind,j]=quantile(multipliers_y[j,:],0.95)
+            multipliers_y5[ind,j]=quantile(multipliers_y[j,:],0.05)
+            multipliers_y95[ind,j]=quantile(multipliers_y[j,:],0.95)
             multipliers_y50[ind,j]=mean(multipliers_y[j,:])
-            multipliers_c10[ind,j]=quantile(multipliers_c[j,:],0.05)
-            multipliers_c90[ind,j]=quantile(multipliers_c[j,:],0.95)
+            multipliers_c5[ind,j]=quantile(multipliers_c[j,:],0.05)
+            multipliers_c95[ind,j]=quantile(multipliers_c[j,:],0.95)
             multipliers_c50[ind,j]=mean(multipliers_c[j,:])
-            multipliers_i10[ind,j]=quantile(multipliers_i[j,:],0.05)
-            multipliers_i90[ind,j]=quantile(multipliers_i[j,:],0.95)
+            multipliers_i5[ind,j]=quantile(multipliers_i[j,:],0.05)
+            multipliers_i95[ind,j]=quantile(multipliers_i[j,:],0.95)
             multipliers_i50[ind,j]=mean(multipliers_i[j,:])
         end
     end
