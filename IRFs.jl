@@ -25,14 +25,14 @@ L=[L_M L_F]
 
 x=0:80
 p1=plot(x,y,title="Panel A: Output multiplier",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
-p2=plot(x,y,title="Panel B: Consumption multiplier",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
-p3=plot(x,y,title="Panel C: Investment multiplier",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
-p4=plot(x,y,title="Panel D: Nominal interest rate",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
-p5=plot(x,y,title="Panel E: Inflation",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
-p6=plot(x,y,title="Panel F: Real interest rate",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
-p7=plot(x,y,title="Panel G: Mkt value debt/output",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
-p8=plot(x,y,title="Panel J: Real wage",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
-p9=plot(x,y,title="Panel K: Labor",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
+p2=plot(x,c,title="Panel B: Consumption multiplier",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
+p3=plot(x,i,title="Panel C: Investment multiplier",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
+p4=plot(x,R,title="Panel D: Nominal interest rate",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
+p5=plot(x,π,title="Panel E: Inflation",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
+p6=plot(x,rr,title="Panel F: Real interest rate",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
+p7=plot(x,b,title="Panel G: Mkt value debt/output",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
+p8=plot(x,w,title="Panel J: Real wage",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
+p9=plot(x,L,title="Panel K: Labor",titlefontsize=7,legend=false,linestyle=[:dot :dot :dash :dot :dot :solid],lc=[:red :red :red :blue :blue :blue])
 
 finalplot=plot(p1,p2,p3,p4,p5,p6,p7,p8,p9,layout=(3,3))
 
