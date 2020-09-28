@@ -1,17 +1,40 @@
 # Computing IRFs
 
-path="C:\\Users\\joaor\\Dropbox\\Economics\\Books_and_notes\\SecondYear\\Macroeconometrics\\TermPaper\\722TermPaper-master\\"
+path="/Users/yoshiki/Dropbox/RWMH_results/"
+cd(path)
 
 using Statistics, LinearAlgebra, Distributions, SparseArrays, JLD, Plots
 
 include(path*"model.jl")
 include(path*"PVmultiplier.jl")
+include(path*"prior.jl")
+include(path*"model.jl")
+include(path*"PVmultiplier.jl")
+include(path*"modelrestrictions.jl")
+include(path*"priorpredictiveanalysis.jl")
+include(path*"Kalman.jl")
+include(path*"ConvertMode.jl")
+include(path*"RWMH.jl")
+
+## Load Parameter Draws
+RWMHDataF  = load("file/RWMH_Fdraws.jld")
+DataFarray = RWMHDataF["ParaF"]
+Nsample    = 100
+FreqUse    = Int(floor(size(DataFarray,2)/ Nsample) -1)
+DrawUseF   = [Vector(DataFarray[:,(ii+1)*FreqUse]) for ii in 1:Nsample-1]
+
+# Monetary Regime
+RWMHDataM  = load("MH100000_regimeM.jld")
+DataMarray = RWMHDataM["Para"]
+DrawUseM   = [DataMarray[(ii+1)*FreqUse] for ii in 1:Nsample-1]
+
+
 
 model="5.1"
-y_M,c_M,i_M,R_M,π_M,rr_M,b_M,w_M,L_M=IRFs(model,para_M,path)
+@time y_M,c_M,i_M,R_M,π_M,rr_M,b_M,w_M,L_M=IRFs(model,DrawUseM,path)
 
 model="5.2"
-y_F,c_F,i_F,R_F,π_F,rr_F,b_F,w_F,L_F=IRFs(model,para_F,path)
+@time y_F,c_F,i_F,R_F,π_F,rr_F,b_F,w_F,L_F=IRFs(model,DrawUseF,path)
 
 y=[y_M y_F]
 c=[c_M c_F]
@@ -36,11 +59,11 @@ p9=plot(x,L,title="Panel K: Labor",titlefontsize=7,legend=false,linestyle=[:dot 
 
 finalplot=plot(p1,p2,p3,p4,p5,p6,p7,p8,p9,layout=(3,3))
 
-savefig(path*"plotIRFs.png")
+savefig(path*"file/plotIRFs.png")
 
 function IRFs(model,para_drawn,path)
     # Apply the function "modelrestrictions"
-    if model==5.1
+    if model=="5.1"
         regime="M"
     else
         regime="F"
@@ -133,22 +156,22 @@ function IRFs(model,para_drawn,path)
         imultiplier_IRFinterval[j,3]=mean(imultiplier_IRF[j,:])
         R_IRFinterval[j,1]=quantile(R_IRF[j,:],0.05)
         R_IRFinterval[j,2]=quantile(R_IRF[j,:],0.95)
-        R_IRFinterval[j,3]=quantile(R_IRF[j,:])
+        R_IRFinterval[j,3]=mean(R_IRF[j,:])
         π_IRFinterval[j,1]=quantile(π_IRF[j,:],0.05)
         π_IRFinterval[j,2]=quantile(π_IRF[j,:],0.95)
-        π_IRFinterval[j,3]=quantile(π_IRF[j,:])
+        π_IRFinterval[j,3]=mean(π_IRF[j,:])
         rr_IRFinterval[j,1]=quantile(rr_IRF[j,:],0.05)
         rr_IRFinterval[j,2]=quantile(rr_IRF[j,:],0.95)
-        rr_IRFinterval[j,3]=quantile(rr_IRF[j,:])
+        rr_IRFinterval[j,3]=mean(rr_IRF[j,:])
         b_IRFinterval[j,1]=quantile(b_IRF[j,:],0.05)
         b_IRFinterval[j,2]=quantile(b_IRF[j,:],0.95)
-        b_IRFinterval[j,3]=quantile(b_IRF[j,:])
+        b_IRFinterval[j,3]=mean(b_IRF[j,:])
         w_IRFinterval[j,1]=quantile(w_IRF[j,:],0.05)
         w_IRFinterval[j,2]=quantile(w_IRF[j,:],0.95)
-        w_IRFinterval[j,3]=quantile(w_IRF[j,:])
+        w_IRFinterval[j,3]=mean(w_IRF[j,:])
         L_IRFinterval[j,1]=quantile(L_IRF[j,:],0.05)
         L_IRFinterval[j,2]=quantile(L_IRF[j,:],0.95)
-        L_IRFinterval[j,3]=quantile(L_IRF[j,:])
+        L_IRFinterval[j,3]=mean(L_IRF[j,:])
     end
 
     return ymultiplier_IRFinterval,cmultiplier_IRFinterval,imultiplier_IRFinterval,R_IRFinterval,π_IRFinterval,rr_IRFinterval,b_IRF,w_IRFinterval,L_IRFinterval
